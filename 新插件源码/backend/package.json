@@ -1,0 +1,25 @@
+{
+  "name": "scenario-finance-extension-backend-city-dev",
+  "version": "2.0.0-city-dev",
+  "private": true,
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js && node --check server/src/app.js && node --check server/src/server.js && node --check server/src/routes/pluginCompatRoutes.js && node --check server/src/routes/sqliteRoutes.js && node --check server/src/middleware/errorHandler.js && node --check server/src/middleware/databaseRequestLogger.js && node --check server/src/utils/debugLogger.js && node --check server/src/services/qwen/qwenClient.js && node --check server/src/services/ocr/ocrService.js && node --check server/src/services/ocr/documentSchemas.js && node --check server/src/services/ocr/providers/qwenOcrProvider.js && node --check server/src/services/database/sqliteService.js && node --check server/src/services/database/pluginDataStore.js && node --check server/src/services/audit/auditService.js && node --check server/src/services/audit/ruleEngine.js && node --check server/src/domain/scenarios/index.js && node --check server/src/domain/scenarios/other/index.js && node --check server/src/domain/scenarios/meeting/index.js && node --check server/src/domain/scenarios/training/index.js && node --check server/src/domain/scenarios/reception/index.js",
+    "check:poppler": "node server/scripts/checkPopplerRuntime.js",
+    "test:sqlite": "node server/scripts/testSqliteService.js && node server/scripts/testDatabasePersistence.js"
+  },
+  "dependencies": {
+    "@babel/core": "7.24.9",
+    "@babel/plugin-transform-nullish-coalescing-operator": "7.24.7",
+    "@babel/plugin-transform-optional-chaining": "7.24.8",
+    "@babel/register": "7.24.6",
+    "axios": "1.6.8",
+    "express": "4.18.2",
+    "multer": "1.4.5-lts.1",
+    "xlsx": "^0.18.5"
+  },
+  "overrides": {
+    "node-releases": "2.0.14"
+  }
+}

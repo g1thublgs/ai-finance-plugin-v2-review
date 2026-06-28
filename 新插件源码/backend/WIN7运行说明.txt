@@ -1,0 +1,47 @@
+Windows 7 x64 backend run guide
+================================
+
+1. Install Node.js
+
+Recommended version for Windows 7 x64:
+
+  Node.js 12.22.12 x64
+
+After installation, open a new cmd window and run:
+
+  node -v
+  npm -v
+
+If "node is not recognized" appears, add this folder to Path:
+
+  C:\Program Files\nodejs\
+
+2. Offline/portable option
+
+If the intranet machine cannot install Node.js, put node.exe in either folder:
+
+  backend\node-win7\node.exe
+  backend\node\node.exe
+
+The startup script checks these two local paths before using system Path.
+
+3. Start service
+
+Double-click:
+
+  ??????.bat
+
+Or run in cmd:
+
+  cd /d backend-folder
+  ??????.bat
+
+The default service URL is:
+
+  http://127.0.0.1:3000
+
+4. Important dependency note
+
+This backend has been pinned to older dependency versions for Windows 7 / Node.js 12 compatibility.
+Do not run "npm update" on the Windows 7 machine.
+

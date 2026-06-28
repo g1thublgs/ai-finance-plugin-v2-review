@@ -1,0 +1,246 @@
+[
+  {
+    "caseName": "日志复现-江裕俊上海住宿清单日期补全",
+    "context": {
+      "defaultStartPlace": "广东省东莞市"
+    },
+    "ocrItems": [
+      {
+        "recognizeType": "trainInvoice",
+        "sourceFileName": "12月11日高铁报销凭证.JPG",
+        "passengerName": "江裕俊",
+        "departureTime": "2023-12-11",
+        "departureStation": "北京西站",
+        "arrivalStation": "上海虹桥站",
+        "totalAmount": "662"
+      },
+      {
+        "recognizeType": "trainInvoice",
+        "sourceFileName": "12月17日高铁报销凭证.JPG",
+        "passengerName": "江裕俊",
+        "departureTime": "2023-12-17",
+        "departureStation": "上海虹桥站",
+        "arrivalStation": "北京西站",
+        "totalAmount": "662"
+      },
+      {
+        "recognizeType": "travelRequest",
+        "sourceFileName": "《公务出差申请表单》 (上海）.PDF",
+        "personName": "江裕俊",
+        "startDate": "2023-12-11",
+        "endDate": "2023-12-17",
+        "destination": "上海市/闵行区",
+        "transportType": "火车",
+        "reason": "金四申奖第一次集中调研"
+      },
+      {
+        "recognizeType": "accommodationList",
+        "sourceFileName": "住宿清单2023年12月11日-16日.JPG",
+        "hotelName": "白金汉爵大酒店",
+        "city": "上海市闵行区",
+        "accommodationDetail": [
+          { "guestName": "江裕俊", "accommodationDate": "12/11", "city": "上海市闵行区", "amount": "500.00" },
+          { "guestName": "江裕俊", "accommodationDate": "12/12", "city": "上海市闵行区", "amount": "500.00" },
+          { "guestName": "江裕俊", "accommodationDate": "12/13", "city": "上海市闵行区", "amount": "500.00" },
+          { "guestName": "江裕俊", "accommodationDate": "12/14", "city": "上海市闵行区", "amount": "500.00" },
+          { "guestName": "江裕俊", "accommodationDate": "12/15", "city": "上海市闵行区", "amount": "500.00" },
+          { "guestName": "江裕俊", "accommodationDate": "12/16", "city": "上海市闵行区", "amount": "500.00" }
+        ]
+      }
+    ],
+    "expected": {
+      "recordCount": 1,
+      "hotelAmountTotal": 3000,
+      "transportAmountTotal": 1324,
+      "localTransportAmountTotal": 500,
+      "totalAll": 5524
+    }
+  },
+  {
+    "caseName": "真实图片识读-杜建鹏广州天河住宿清单",
+    "context": {
+      "defaultStartPlace": "广东省东莞市大朗"
+    },
+    "ocrItems": [
+      {
+        "recognizeType": "travelRequest",
+        "sourceFileName": "04_杜建鹏公务出差申请.JPG",
+        "personName": "杜建鹏",
+        "startDate": "2026-04-27",
+        "endDate": "2026-04-28",
+        "destination": "广东省广州市天河区",
+        "transportation": "个人交通工具",
+        "reason": "到省局一分局参加计算机通信行业税源感知报告研讨和撰写"
+      },
+      {
+        "recognizeType": "accommodationList",
+        "sourceFileName": "05_杜建鹏住宿清单.JPG",
+        "hotelName": "广州御上喜舍公寓管理有限公司",
+        "guestName": "杜建鹏",
+        "checkInDate": "2026-04-27",
+        "leavingDate": "2026-04-28",
+        "city": "广东省广州市天河区",
+        "totalAmount": "406.00",
+        "accommodationDetail": [
+          {
+            "guestName": "杜建鹏",
+            "accommodationDate": "2026-04-27",
+            "city": "广东省广州市天河区",
+            "amount": "406.00"
+          }
+        ]
+      }
+    ],
+    "expected": {
+      "recordCount": 1,
+      "hotelAmountTotal": 406,
+      "transportAmountTotal": 0,
+      "localTransportAmountTotal": 160,
+      "totalAll": 766
+    }
+  },
+  {
+    "caseName": "文本层识读-李笑兰北京住宿清单同城匹配",
+    "context": {
+      "defaultStartPlace": "广东省东莞市"
+    },
+    "ocrItems": [
+      {
+        "recognizeType": "travelRequest",
+        "sourceFileName": "02_出差审批 0421-0424.pdf",
+        "personName": "李笑兰",
+        "startDate": "2026-04-21",
+        "endDate": "2026-04-24",
+        "destination": "北京市/海淀区",
+        "transportation": "高铁/动车、飞机、个人交通工具",
+        "reason": "到国家税务总局货物和劳务司参加增值税政策调研会议"
+      },
+      {
+        "recognizeType": "accommodationList",
+        "sourceFileName": "03_住宿清单 0421-0424.pdf",
+        "hotelName": "北京市亦庄酒店",
+        "guestName": "李笑兰",
+        "checkInDate": "2026-04-21",
+        "leavingDate": "2026-04-24",
+        "city": "北京市亦庄经济技术开发区宏达北路7号",
+        "totalAmount": "1500.00",
+        "accommodationDetail": [
+          { "guestName": "李笑兰", "accommodationDate": "2026-04-21", "city": "北京市亦庄经济技术开发区宏达北路7号", "amount": "500.00" },
+          { "guestName": "李笑兰", "accommodationDate": "2026-04-22", "city": "北京市亦庄经济技术开发区宏达北路7号", "amount": "500.00" },
+          { "guestName": "李笑兰", "accommodationDate": "2026-04-23", "city": "北京市亦庄经济技术开发区宏达北路7号", "amount": "500.00" }
+        ]
+      }
+    ],
+    "expected": {
+      "recordCount": 1,
+      "hotelAmountTotal": 1500,
+      "transportAmountTotal": 0,
+      "localTransportAmountTotal": 320,
+      "totalAll": 2220
+    }
+  },
+  {
+    "caseName": "内网日志复现-同人同日重复审批单去重",
+    "context": {
+      "defaultStartPlace": "广东省东莞市"
+    },
+    "ocrItems": [
+      {
+        "recognizeType": "travelRequest",
+        "sourceFileName": "upload_1780994927630_xscpjyo9.pdf_page_1.jpg",
+        "personName": "蔡兆元",
+        "startDate": "2026-04-21",
+        "endDate": "2026-04-21",
+        "destination": "广东省/东莞市/南城区",
+        "reason": "到市局纪检组补充完善案件核查资料"
+      },
+      {
+        "recognizeType": "travelRequest",
+        "sourceFileName": "upload_1780994927630_xscpjyo9.pdf_page_45.jpg",
+        "personName": "蔡兆元",
+        "startDate": "2026-04-21",
+        "endDate": "2026-04-21",
+        "destination": "广东省/东莞市/南城区",
+        "reason": "到市局纪检组补充完善案件核查资料"
+      },
+      {
+        "recognizeType": "travelRequest",
+        "sourceFileName": "upload_1780994927630_xscpjyo9.pdf_page_1.jpg",
+        "personName": "蔡兆元",
+        "startDate": "2026-04-22",
+        "endDate": "2026-04-22",
+        "destination": "广东省/东莞市/清溪镇、广东省/东莞市/南城区",
+        "reason": "按照市局纪检组工作安排到清溪分局补充案件资料。将上午到清溪分局补正的案件材料送上市局纪检组"
+      },
+      {
+        "recognizeType": "travelRequest",
+        "sourceFileName": "upload_1780994927630_xscpjyo9.pdf_page_47.jpg",
+        "personName": "蔡兆元",
+        "startDate": "2026-04-22",
+        "endDate": "2026-04-22",
+        "destination": "广东省/东莞市/清溪镇",
+        "reason": "按照市局纪检组工作安排到清溪分局补充案件资料。"
+      },
+      {
+        "recognizeType": "travelRequest",
+        "sourceFileName": "upload_1780994927630_xscpjyo9.pdf_page_49.jpg",
+        "personName": "蔡兆元",
+        "startDate": "2026-04-22",
+        "endDate": "2026-04-22",
+        "destination": "广东省/东莞市/南城区",
+        "reason": "将上午到清溪分局补正的案件材料送上市局纪检组。"
+      },
+      {
+        "recognizeType": "travelRequest",
+        "sourceFileName": "upload_1780994927630_xscpjyo9.pdf_page_1.jpg",
+        "personName": "蔡兆元",
+        "startDate": "2026-04-24",
+        "endDate": "2026-04-24",
+        "destination": "广东省/东莞市/南城区",
+        "reason": "到市局纪检组处理之前参与办案的案件资料"
+      },
+      {
+        "recognizeType": "travelRequest",
+        "sourceFileName": "upload_1780994927630_xscpjyo9.pdf_page_55.jpg",
+        "personName": "蔡兆元",
+        "startDate": "2026-04-24",
+        "endDate": "2026-04-24",
+        "destination": "广东省/东莞市/南城区",
+        "reason": "到市局纪检组处理之前参与办案的案件资料"
+      }
+    ],
+    "expected": {
+      "recordCount": 3,
+      "hotelAmountTotal": 0,
+      "transportAmountTotal": 0,
+      "localTransportAmountTotal": 240,
+      "totalAll": 540
+    }
+  },
+  {
+    "caseName": "半天规则-下午出发伙食补助按半天扣减",
+    "context": {
+      "defaultStartPlace": "广东省东莞市"
+    },
+    "ocrItems": [
+      {
+        "recognizeType": "travelRequest",
+        "sourceFileName": "2026.03.25下午-03.26广州-叶伟锋.pdf",
+        "personName": "叶伟锋",
+        "startDate": "2026-03-25",
+        "endDate": "2026-03-26",
+        "startPeriod": "下午",
+        "endPeriod": "",
+        "destination": "广东省广州市",
+        "reason": "到省局参加专项工作"
+      }
+    ],
+    "expected": {
+      "recordCount": 1,
+      "hotelAmountTotal": 0,
+      "transportAmountTotal": 0,
+      "localTransportAmountTotal": 160,
+      "totalAll": 310
+    }
+  }
+]

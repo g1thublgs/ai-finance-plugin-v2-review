@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>AI财务预填预审审核助手</title>
+    <style>
+        :root {
+            --bg: #f5f6f8;
+            --top: #062b4f;
+            --top-soft: #0d3d6d;
+            --side: #edf0f4;
+            --side-soft: #ffffff;
+            --panel: #ffffff;
+            --panel-soft: #f8fafc;
+            --text: #172033;
+            --muted: #667085;
+            --border: #d9e2ec;
+            --border-soft: #e8eef5;
+            --blue: #2563eb;
+            --blue-soft: #eaf1ff;
+            --green: #12805c;
+            --green-soft: #e8f7f0;
+            --amber: #b7791f;
+            --amber-soft: #fff7e6;
+            --red: #c2410c;
+            --red-soft: #fff0e8;
+            --shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+            line-height: 1.5;
+            overflow: hidden;
+        }
+
+        button, input, textarea, select { font: inherit; }
+
+        button {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: #eef2f7;
+            color: var(--text);
+            padding: 7px 12px;
+            cursor: pointer;
+            font-size: 13px;
+            min-height: 34px;
+        }
+
+        button:hover:not(:disabled) { border-color: #b9c7d6; background: #e5ebf3; }
+        button.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+        button.primary:hover:not(:disabled) { background: #1d4ed8; }
+        button.success { background: var(--green); border-color: var(--green); color: #fff; }
+        button.success:hover:not(:disabled) { background: #0f6b4d; }
+        button:disabled { opacity: .5; cursor: not-allowed; }
+
+        .app-shell {
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 214px minmax(0, 1fr);
+            overflow: hidden;
+            background: var(--bg);
+        }
+
+        .is-hidden { display: none !important; }
+
+        .upload-home {
+            height: 100vh;
+            min-height: 100vh;
+            background:
+                linear-gradient(180deg, rgba(6,43,79,.98) 0, rgba(6,43,79,.98) 168px, transparent 168px),
+                var(--bg);
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr);
+            overflow-x: hidden;
+            overflow-y: auto;
+            scrollbar-gutter: stable;
+        }
+
+        .upload-home-top {
+            min-height: 64px;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #ffffff;
+        }
+
+        .upload-home-brand {
+            display: grid;
+            gap: 3px;
+        }
+
+        .upload-home-brand strong {
+            font-size: 18px;
+            line-height: 1.2;
+        }
+
+        .upload-home-brand span {
+            font-size: 12px;
+            color: #b7c8dc;
+        }
+
+        .upload-home-main {
+            width: 100%;
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 18px 22px 28px;
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr);
+            align-content: start;
+            gap: 14px;
+            height: 100%;
+            max-height: calc(100vh - 64px);
+            min-height: 0;
+        }
+
+        .upload-login-card {
+            background: #ffffff;
+            border: 1px solid #d7dee8;
+            border-radius: 8px;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, .14);
+            display: grid;
+            grid-template-columns: 1fr;
+            overflow: hidden;
+            position: relative;
+            z-index: 2;
+        }
+
+        .upload-login-intro {
+            display: none;
+        }
+
+        .upload-login-intro h1 {
+            font-size: 24px;
+            line-height: 1.25;
+            font-weight: 800;
+            color: #0f2742;
+        }
+
+        .upload-login-intro p {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .upload-feature-list {
+            display: grid;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .upload-feature {
+            display: grid;
+            grid-template-columns: 20px minmax(0, 1fr);
+            gap: 8px;
+            color: #344054;
+            font-size: 13px;
+        }
+
+        .upload-feature::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: var(--green);
+            margin-top: 6px;
+            justify-self: center;
+        }
+
+        .upload-login-form {
+            padding: 22px;
+            display: grid;
+            gap: 12px;
+            align-content: center;
+        }
+
+        .upload-login-form h2 {
+            font-size: 17px;
+            font-weight: 800;
+        }
+
+        .home-form-head {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 12px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .home-form-head span {
+            color: var(--muted);
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .home-step {
+            display: grid;
+            grid-template-columns: 28px minmax(0, 1fr);
+            gap: 10px;
+            align-items: start;
+        }
+
+        .home-step-index {
+            width: 28px;
+            height: 28px;
+            border-radius: 999px;
+            background: var(--blue-soft);
+            color: var(--blue);
+            display: grid;
+            place-items: center;
+            font-size: 13px;
+            font-weight: 800;
+            border: 1px solid #c8dafc;
+        }
+
+        .home-step-body {
+            display: grid;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .home-step-title {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            min-height: 28px;
+        }
+
+        .home-step-title strong {
+            font-size: 14px;
+        }
+
+        .home-step-title span {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .home-action-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .home-action-row button {
+            min-width: 150px;
+        }
+
+        .upload-file-input {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: #fff;
+            padding: 11px;
+            width: 100%;
+        }
+
+        .source-mode-box {
+            display: grid;
+            gap: 10px;
+            padding: 0;
+            border: none;
+            background: transparent;
+            border-radius: 0;
+        }
+
+        .source-mode-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 8px;
+        }
+
+        .source-mode-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #fff;
+            padding: 11px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            min-height: 42px;
+        }
+
+        .source-mode-card input {
+            margin-right: 6px;
+        }
+
+        .source-mode-card strong {
+            font-size: 13px;
+        }
+
+        .source-mode-card span {
+            display: none;
+        }
+
+        .source-mode-card:has(input:checked) {
+            border-color: var(--blue);
+            background: var(--blue-soft);
+        }
+
+        .scenario-select-box {
+            display: grid;
+            gap: 6px;
+        }
+
+        .scenario-select-box label {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+        .scenario-select-box select {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: #fff;
+            color: var(--text);
+            padding: 10px 11px;
+            outline: none;
+        }
+
+        .side-nav {
+            background: var(--side);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            border-right: 1px solid #d7dee8;
+        }
+
+        .brand {
+            min-height: 64px;
+            padding: 13px 16px;
+            border-bottom: 1px solid #0b375f;
+            background: var(--top);
+            color: #ffffff;
+        }
+
+        .brand-title {
+            font-size: 17px;
+            font-weight: 800;
+            letter-spacing: 0;
+        }
+
+        .brand-subtitle {
+            margin-top: 4px;
+            color: #b7c8dc;
+            font-size: 12px;
+        }
+
+        .nav-list {
+            padding: 12px 10px;
+            display: grid;
+            gap: 6px;
+        }
+
+        .nav-item {
+            width: 100%;
+            border: 1px solid transparent;
+            background: transparent;
+            color: #344054;
+            display: grid;
+            grid-template-columns: 22px minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 8px;
+            text-align: left;
+            padding: 9px 10px;
+            min-height: 38px;
+        }
+
+        .nav-item:hover:not(:disabled) { background: #f8fafc; border-color: #dbe3ee; }
+        .nav-item.active { background: #ffffff; color: var(--blue); border-color: #dbe3ee; box-shadow: 0 1px 3px rgba(15, 23, 42, .08); }
+        .nav-item:disabled { opacity: .38; }
+        .nav-mark { width: 18px; height: 18px; border-radius: 6px; background: #dce4ee; color: #506176; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; }
+        .nav-item.active .nav-mark { background: var(--blue-soft); color: var(--blue); }
+        .nav-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .nav-badge {
+            border-radius: 999px;
+            padding: 1px 7px;
+            background: #dce4ee;
+            color: #506176;
+            font-size: 11px;
+            min-width: 18px;
+            text-align: center;
+        }
+        .nav-item.active .nav-badge { background: var(--blue-soft); color: var(--blue); }
+
+        .side-footer {
+            margin-top: auto;
+            padding: 12px 10px 14px;
+            border-top: 1px solid #d7dee8;
+            display: grid;
+            gap: 8px;
+        }
+
+        .side-footer button { width: 100%; }
+
+        .main {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .topbar {
+            min-height: 64px;
+            background: var(--top);
+            border-bottom: 1px solid #0b375f;
+            color: #ffffff;
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .page-title {
+            display: grid;
+            gap: 2px;
+            min-width: 0;
+        }
+
+        .page-title h1 {
+            font-size: 18px;
+            line-height: 1.2;
+            font-weight: 800;
+        }
+
+        .topbar .muted { color: #b7c8dc; }
+        .topbar button {
+            background: rgba(255,255,255,.08);
+            border-color: rgba(255,255,255,.18);
+            color: #ffffff;
+        }
+        .topbar button:hover:not(:disabled) {
+            background: rgba(255,255,255,.14);
+            border-color: rgba(255,255,255,.32);
+        }
+        .topbar button.primary {
+            background: #ffffff;
+            color: var(--top);
+            border-color: #ffffff;
+        }
+        .topbar button.view-active {
+            background: #ffffff;
+            color: var(--top);
+            border-color: #ffffff;
+            font-weight: 800;
+        }
+
+        .page-title .muted { font-size: 12px; }
+
+        .top-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .workspace {
+            flex: 1;
+            min-height: 0;
+            overflow: auto;
+            padding: 16px 18px 20px;
+        }
+
+        .workspace-section {
+            display: none;
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .workspace-section.active { display: block; }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            box-shadow: var(--shadow);
+            margin-bottom: 14px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 13px 16px;
+            border-bottom: 1px solid var(--border);
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .panel-header h2 {
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .panel-body { padding: 14px 16px; }
+        .muted { color: var(--muted); font-size: 12px; }
+        .actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+        .upload-hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1.15fr) minmax(270px, .85fr);
+            gap: 14px;
+            align-items: stretch;
+        }
+
+        .upload-drop {
+            border: 1px dashed #9fb3c8;
+            border-radius: 6px;
+            background: #ffffff;
+            padding: 18px;
+            display: grid;
+            gap: 12px;
+            align-content: center;
+            min-height: 172px;
+        }
+
+        .upload-drop h2 {
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .upload-drop input[type="file"] {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: #fff;
+            padding: 8px;
+        }
+
+        .assistant-card {
+            border: 1px solid #dbeafe;
+            border-radius: 6px;
+            background: #ffffff;
+            padding: 14px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .assistant-card-title {
+            font-weight: 800;
+            color: #1d4ed8;
+        }
+
+        .status {
+            padding: 9px 11px;
+            border-radius: 8px;
+            background: #ecf3ff;
+            color: var(--blue);
+            font-size: 13px;
+        }
+
+        .status.success { background: var(--green-soft); color: var(--green); }
+        .status.warning { background: var(--amber-soft); color: var(--amber); }
+        .status.error { background: var(--red-soft); color: var(--red); }
+
+        .progress {
+            height: 8px;
+            border-radius: 999px;
+            overflow: hidden;
+            background: #e5e7eb;
+        }
+
+        .progress span {
+            display: block;
+            height: 100%;
+            width: 0%;
+            background: var(--blue);
+            transition: width .2s ease;
+        }
+
+        .file-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 10px;
+            max-height: none;
+            min-height: 0;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .upload-progress-panel {
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+        }
+
+        .upload-progress-panel .file-list {
+            flex: 1;
+        }
+
+        .file-card {
+            border: 1px solid var(--border);
+            background: #fff;
+            border-radius: 6px;
+            padding: 11px;
+            display: grid;
+            gap: 7px;
+            min-width: 0;
+        }
+
+        .file-card-title { font-weight: 800; min-width: 0; word-break: break-word; }
+
+        .file-card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .badge.pending { background: #fef3c7; color: #92400e; }
+        .badge.running { background: #dbeafe; color: #1d4ed8; }
+        .badge.success { background: #d1fae5; color: #065f46; }
+        .badge.failed { background: #fee2e2; color: #991b1b; }
+
+        .panel-header-tools {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .compact-select {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: #fff;
+            color: var(--text);
+            padding: 6px 8px;
+            min-height: 32px;
+            font-size: 12px;
+        }
+
+        .issue-counts {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-left: auto;
+        }
+
+        .record-summary-main {
+            min-width: 0;
+            word-break: break-word;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+            gap: 10px;
+        }
+
+        .metric {
+            background: var(--panel-soft);
+            border: 1px solid #e4ebf3;
+            border-radius: 6px;
+            padding: 11px;
+            min-width: 0;
+        }
+
+        .metric-label { color: var(--muted); font-size: 12px; }
+        .metric-value { font-size: 18px; font-weight: 800; margin-top: 4px; word-break: break-word; }
+
+        .summary-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 290px;
+            gap: 14px;
+            align-items: start;
+        }
+
+        .next-box {
+            border: 1px solid var(--border-soft);
+            border-radius: 6px;
+            background: #fff;
+            padding: 12px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .next-box h3 { font-size: 14px; }
+        .next-item { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 8px; font-size: 12px; color: #344054; }
+        .next-dot { width: 8px; height: 8px; border-radius: 999px; background: var(--green); margin-top: 5px; justify-self: center; }
+        .next-dot.pending { background: #cbd5e1; }
+
+        .journey-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .journey-card {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: #fff;
+            padding: 12px;
+            display: grid;
+            gap: 10px;
+        }
+        .journey-card.pass { border-color: #bbf7d0; background: #fbfffd; }
+        .journey-card.warning { border-color: #fde68a; background: #fffdf4; }
+        .journey-card.error { border-color: #fecaca; background: #fff8f6; }
+
+        .journey-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .journey-route {
+            font-size: 13px;
+            font-weight: 800;
+            word-break: break-word;
+            color: #344054;
+        }
+
+        .journey-title { color: #0f2742; font-size: 16px; font-weight: 800; word-break: break-word; }
+        .journey-person { color: var(--blue); font-weight: 800; }
+        .journey-time { color: var(--muted); font-size: 12px; margin-top: 2px; }
+        .journey-issues .issue { margin-top: 0; }
+
+        .journey-fees {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(126px, 1fr));
+            gap: 8px;
+        }
+
+        .fee-pill {
+            border: 1px solid var(--border-soft);
+            border-radius: 6px;
+            background: var(--panel-soft);
+            padding: 9px;
+        }
+
+        .fee-label { color: var(--muted); font-size: 12px; }
+        .fee-value { margin-top: 3px; font-weight: 800; }
+        .fee-sub { margin-top: 2px; color: var(--muted); font-size: 12px; }
+
+        .record {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: #fff;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .record summary {
+            list-style: none;
+            cursor: pointer;
+            padding: 12px;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            font-weight: 800;
+        }
+
+        .record summary::-webkit-details-marker { display: none; }
+        .record-body { padding: 12px; }
+
+        .field-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+        .field {
+            border: 1px solid #e4ebf3;
+            background: var(--panel-soft);
+            border-radius: 8px;
+            padding: 8px;
+        }
+        .field-label { font-size: 12px; color: var(--muted); }
+        .field-value { margin-top: 3px; font-weight: 700; word-break: break-word; }
+
+        .prefill-edit-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; font-size: 12px; }
+        .prefill-edit-table th, .prefill-edit-table td { text-align: left; vertical-align: top; }
+        .prefill-edit-table th {
+            width: 118px;
+            color: #344054;
+            font-weight: 800;
+            white-space: nowrap;
+            padding: 10px 10px 10px 0;
+        }
+        .prefill-edit-table td { padding: 0; }
+
+        .edit-line { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 6px; align-items: center; }
+        .edit-line.four { grid-template-columns: minmax(72px, .9fr) minmax(72px, .9fr) minmax(90px, 1fr) minmax(90px, 1fr); }
+        .edit-line.three { grid-template-columns: minmax(72px, .9fr) minmax(90px, 1fr) minmax(90px, 1fr); }
+        .edit-line.single { grid-template-columns: minmax(0, 220px); }
+        .edit-sep { color: var(--muted); text-align: center; }
+
+        .input-watermark {
+            position: relative;
+            display: block;
+            min-width: 0;
+        }
+
+        .input-watermark::after {
+            content: attr(data-hint);
+            position: absolute;
+            top: 3px;
+            right: 8px;
+            max-width: calc(100% - 16px);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #94a3b8;
+            font-size: 10px;
+            line-height: 1;
+            pointer-events: none;
+        }
+
+        .record-edit-control {
+            width: 100%;
+            min-width: 0;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 16px 7px 5px;
+            background: #fff;
+            color: var(--text);
+            min-height: 42px;
+        }
+
+        .record-edit-control:focus {
+            outline: none;
+            border-color: #93b4ef;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+        }
+
+        .record-edit-control::placeholder { color: #cbd5e1; }
+
+        .readonly-amount {
+            display: block;
+            border: 1px solid #e4ebf3;
+            border-radius: 6px;
+            background: #f8fafc;
+            padding: 16px 7px 5px;
+            font-weight: 800;
+            min-height: 42px;
+        }
+
+        .record-total-line { margin-top: 10px; text-align: right; font-weight: 800; color: var(--blue); }
+
+        .audit-record-body {
+            display: grid;
+            gap: 10px;
+        }
+
+        .audit-block {
+            border: 1px solid var(--border-soft);
+            border-radius: 6px;
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .audit-block-head {
+            padding: 10px 12px;
+            background: var(--panel-soft);
+            border-bottom: 1px solid var(--border-soft);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            font-weight: 800;
+        }
+
+        .audit-block-body {
+            padding: 10px 12px;
+        }
+
+        .audit-ocr-list {
+            display: grid;
+            gap: 8px;
+        }
+
+        .payment-match-list {
+            display: grid;
+            gap: 8px;
+        }
+        .payment-match-card {
+            border: 1px solid var(--border-soft);
+            border-radius: 6px;
+            background: #fff;
+            padding: 10px;
+            display: grid;
+            gap: 8px;
+        }
+        .payment-match-card.pass { border-color: #bbf7d0; background: #fbfffd; }
+        .payment-match-card.warning { border-color: #fde68a; background: #fffdf4; }
+        .payment-match-card.error { border-color: #fecaca; background: #fff8f6; }
+        .payment-match-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .issue {
+            border-left: 4px solid var(--amber);
+            background: #fffaf0;
+            padding: 8px 10px;
+            margin-top: 8px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        .issue.error { border-left-color: var(--red); background: #fff5f0; }
+        .issue.pass { border-left-color: var(--green); background: #f0fdf4; }
+        .issue.warning { border-left-color: var(--amber); background: var(--amber-soft); }
+
+        .rule-card {
+            border: 1px solid var(--border-soft);
+            border-radius: 6px;
+            background: #fff;
+            padding: 0 10px;
+            margin-bottom: 8px;
+        }
+        .rule-card.pass { border-color: #bbf7d0; background: #fbfffd; }
+        .rule-card.warning { border-color: #fde68a; background: #fffdf4; }
+        .rule-card.error { border-color: #fecaca; background: #fff8f6; }
+
+        .rule-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 8px 0;
+            font-size: 13px;
+        }
+        .rule-issues {
+            border-top: 1px solid #eef2f7;
+            padding: 8px 0 10px;
+        }
+        .rule-issues .issue { margin-top: 0; margin-bottom: 6px; }
+        .rule-issues .issue:last-child { margin-bottom: 0; }
+
+        .empty {
+            color: var(--muted);
+            padding: 18px;
+            text-align: center;
+            background: #ffffff;
+            border: 1px dashed #d8e2ec;
+            border-radius: 6px;
+        }
+
+        .file-link { color: var(--blue); text-decoration: none; }
+        .file-link:hover { text-decoration: underline; }
+
+        .raw-box {
+            max-height: 420px;
+            overflow: auto;
+            background: #111827;
+            color: #e5e7eb;
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+
+        .ocr-inspector {
+            display: grid;
+            grid-template-columns: 280px minmax(0, 1fr);
+            gap: 12px;
+            align-items: start;
+        }
+
+        .ocr-file-tabs {
+            max-height: 520px;
+            overflow: auto;
+            display: grid;
+            gap: 8px;
+            padding-right: 2px;
+        }
+
+        .ocr-file-tab {
+            width: 100%;
+            text-align: left;
+            background: #fff;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 6px;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .ocr-file-tab.active {
+            border-color: var(--blue);
+            background: var(--blue-soft);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, .08);
+        }
+
+        .ocr-file-name {
+            font-weight: 800;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .ocr-file-detail {
+            min-width: 0;
+            display: grid;
+            gap: 10px;
+        }
+
+        .ocr-file-toolbar {
+            border: 1px solid var(--border-soft);
+            border-radius: 6px;
+            background: var(--panel-soft);
+            padding: 10px 12px;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .ocr-file-title {
+            font-weight: 800;
+            word-break: break-word;
+        }
+
+        .ocr-item-card {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: #fff;
+            padding: 11px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .ocr-item-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+        }
+
+        .ocr-field-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+            gap: 8px;
+        }
+
+        .ocr-field {
+            border: 1px solid #e4ebf3;
+            border-radius: 6px;
+            background: var(--panel-soft);
+            padding: 8px;
+            min-width: 0;
+        }
+
+        .ocr-field span {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .ocr-field strong {
+            display: block;
+            margin-top: 3px;
+            font-size: 13px;
+            word-break: break-word;
+        }
+
+        .ocr-nested-block {
+            border-top: 1px solid #eef2f7;
+            padding-top: 8px;
+        }
+
+        .ocr-nested-title {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .ocr-value-list {
+            margin: 0;
+            padding-left: 18px;
+            display: grid;
+            gap: 4px;
+        }
+
+        .ocr-nested {
+            display: grid;
+            gap: 3px;
+        }
+
+        .ocr-nested-field {
+            display: block;
+            font-weight: 400;
+        }
+        .invoice-detail-table-wrap {
+            overflow: auto;
+            border: 1px solid #e4ebf3;
+            border-radius: 6px;
+        }
+        .invoice-detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 560px;
+            font-size: 12px;
+            background: #fff;
+        }
+        .invoice-detail-table th,
+        .invoice-detail-table td {
+            border-bottom: 1px solid #eef2f7;
+            padding: 7px 8px;
+            text-align: left;
+            vertical-align: top;
+            word-break: break-word;
+        }
+        .invoice-detail-table th {
+            background: #f8fafc;
+            color: #475467;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+        .invoice-detail-table tr:last-child td { border-bottom: none; }
+
+        .ai-refine-box { display: grid; gap: 12px; }
+        .ai-assistant-widget {
+            position: fixed;
+            right: 18px;
+            bottom: 18px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        .ai-assistant-toggle {
+            width: 46px;
+            height: 46px;
+            border-radius: 999px;
+            border-color: #1d4ed8;
+            background: #2563eb;
+            color: #fff;
+            box-shadow: 0 8px 22px rgba(37, 99, 235, .28);
+            font-weight: 900;
+            pointer-events: auto;
+        }
+        .ai-assistant-popover {
+            position: absolute;
+            right: 0;
+            bottom: 56px;
+            width: min(340px, calc(100vw - 28px));
+            max-height: min(520px, calc(100vh - 96px));
+            overflow: auto;
+            border: 1px solid #c9dbf5;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 18px 42px rgba(15, 23, 42, .18);
+            padding: 10px;
+            display: none;
+            pointer-events: auto;
+        }
+        .ai-assistant-widget.open .ai-assistant-popover { display: grid; gap: 10px; }
+        .ai-assistant-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 8px;
+            border-bottom: 1px solid #eef2f7;
+            padding-bottom: 8px;
+        }
+        .ai-assistant-head strong { display: block; color: #1d4ed8; }
+        .ai-close-btn {
+            width: 28px;
+            height: 28px;
+            min-height: 28px;
+            padding: 0;
+            border-radius: 999px;
+            background: #f8fafc;
+        }
+        .ai-chat-shell {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: #ffffff;
+            padding: 12px;
+            display: grid;
+            gap: 10px;
+        }
+        .chat-bubble {
+            max-width: 86%;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .chat-bubble.assistant { background: #eef6ff; color: #1e3a8a; justify-self: start; }
+        .chat-bubble.user { background: #ecfdf3; color: #14532d; justify-self: end; }
+        .ai-refine-box textarea {
+            width: 100%;
+            min-height: 82px;
+            resize: vertical;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px;
+            background: #fff;
+            color: var(--text);
+        }
+        .ai-refine-box.compact { gap: 8px; }
+        .ai-refine-box.compact .ai-chat-shell { max-height: 220px; overflow: auto; padding: 9px; }
+        .ai-refine-box.compact textarea { min-height: 68px; max-height: 120px; font-size: 12px; }
+        .ai-refine-box.compact .actions { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+        .ai-refine-box.compact .chat-bubble { max-width: 100%; font-size: 12px; padding: 8px 10px; }
+        .ai-refine-box textarea:focus {
+            outline: none;
+            border-color: #93b4ef;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+        }
+        .ai-result {
+            border: 1px solid #dbeafe;
+            background: #eff6ff;
+            color: #1e40af;
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        .ai-result.answer {
+            border-color: #bbf7d0;
+            background: #f0fdf4;
+            color: #166534;
+        }
+        .ai-answer { margin-top: 6px; white-space: pre-wrap; }
+        .ai-change-log { margin-top: 6px; }
+
+        @media (max-width: 860px) {
+            body { overflow: auto; }
+            .upload-home-main {
+                height: auto;
+                max-height: none;
+                grid-template-rows: auto auto;
+            }
+            .upload-login-card { grid-template-columns: 1fr; }
+            .home-action-row { grid-template-columns: 1fr; }
+            .home-form-head { display: grid; }
+            .upload-login-intro { border-right: none; border-bottom: 1px solid #e1e8f0; }
+            .app-shell { min-height: 100vh; height: auto; grid-template-columns: 1fr; }
+            .side-nav { position: sticky; top: 0; z-index: 20; }
+            .nav-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .nav-item { grid-template-columns: 18px minmax(0, 1fr); }
+            .nav-badge { display: none; }
+            .side-footer { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .workspace { overflow: visible; }
+            .summary-layout { grid-template-columns: 1fr; }
+            .journey-fees { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .edit-line, .edit-line.three, .edit-line.four { grid-template-columns: 1fr; }
+            .edit-sep { display: none; }
+            .ocr-inspector { grid-template-columns: 1fr; }
+            .ocr-file-tabs { max-height: 220px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-home" id="uploadHome">
+        <div class="upload-home-top">
+            <div class="upload-home-brand">
+                <strong>AI财务预填预审审核助手</strong>
+                <span>选择来源，开始识别</span>
+            </div>
+        </div>
+        <div class="upload-home-main">
+            <div class="upload-login-card">
+                <div class="upload-login-form">
+                    <div class="home-form-head">
+                        <h2>三步开始</h2>
+                        <span>默认：智能报销 + 附件上传</span>
+                    </div>
+                    <div class="home-step">
+                        <div class="home-step-index">1</div>
+                        <div class="home-step-body">
+                            <div class="home-step-title"><strong>选择数据来源</strong><span>填单用上传，审核用提取页面</span></div>
+                            <div class="source-mode-box">
+                                <div class="source-mode-row">
+                                    <label class="source-mode-card">
+                                        <div><input type="radio" name="sourceMode" value="upload" checked><strong>上传附件预填预审</strong></div>
+                                    </label>
+                                    <label class="source-mode-card">
+                                        <div><input type="radio" name="sourceMode" value="page"><strong>提取当前页面审核</strong></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="home-step">
+                        <div class="home-step-index">2</div>
+                        <div class="home-step-body">
+                            <div class="home-step-title"><strong>选择报销场景</strong><span id="sourceModeHint">默认智能匹配；也可手动选择场景。</span></div>
+                            <div class="scenario-select-box">
+                                <select id="scenarioSelect" aria-label="报销场景">
+                                    <option value="smart" selected>智能报销（自动匹配）</option>
+                                    <option value="travel">差旅费报销</option>
+                                    <option value="other">其他事项报销</option>
+                                    <option value="meeting">会议费报销</option>
+                                    <option value="training">培训费报销</option>
+                                    <option value="reception">公务接待费报销</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="home-step">
+                        <div class="home-step-index">3</div>
+                        <div class="home-step-body">
+                            <div class="home-step-title"><strong>开始处理</strong><span id="homeActionHint">支持 PDF、OFD、WPS、Word、Excel、图片，最多 100 个附件。</span></div>
+                            <div class="home-action-row">
+                                <input id="fileInput" class="upload-file-input" type="file" multiple accept=".pdf,.ofd,.wps,.doc,.docx,.xls,.xlsx,.et,.ett,.csv,.txt,.jpg,.jpeg,.png,.bmp">
+                                <button id="startBtn" class="primary" disabled>上传识别</button>
+                                <button id="extractPageBtn" class="primary is-hidden">提取页面并审核</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="statusBox" class="status">请选择需要报销的单据文件。</div>
+                    <div class="progress"><span id="progressBar"></span></div>
+                </div>
+            </div>
+
+            <div class="panel upload-progress-panel">
+                <div class="panel-header">
+                    <h2>附件识别进度</h2>
+                    <span id="fileStats" class="muted">0 个文件</span>
+                </div>
+                <div id="fileList" class="panel-body file-list">
+                    <div class="empty">暂无文件</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-shell is-hidden" id="dashboardShell">
+        <aside class="side-nav">
+            <div class="brand">
+                <div class="brand-title">AI财务助手</div>
+                <div class="brand-subtitle" id="sourceModeBadge">附件上传预填模式</div>
+            </div>
+            <nav class="nav-list" aria-label="预填流程导航">
+                <button class="nav-item" data-view-target="summaryPanel">
+                    <span class="nav-mark">1</span><span class="nav-text">预填汇总</span><span id="navSummaryBadge" class="nav-badge">0</span>
+                </button>
+                <button class="nav-item" data-view-target="itineraryPanel">
+                    <span class="nav-mark">2</span><span class="nav-text">行程确认</span><span id="navItineraryBadge" class="nav-badge">0</span>
+                </button>
+                <button class="nav-item" data-view-target="recordsPanel">
+                    <span class="nav-mark">3</span><span class="nav-text">报销明细</span><span id="navRecordBadge" class="nav-badge">0</span>
+                </button>
+                <button class="nav-item" data-view-target="rulesPanel">
+                    <span class="nav-mark">4</span><span class="nav-text">指标命中</span><span id="navRuleBadge" class="nav-badge">0</span>
+                </button>
+                <button class="nav-item" data-view-target="ocrPanel">
+                    <span class="nav-mark">5</span><span class="nav-text">OCR结果</span><span id="navOcrBadge" class="nav-badge">0</span>
+                </button>
+            </nav>
+            <div class="side-footer">
+                <button id="fillBtn" class="success" disabled>一键填写至网页</button>
+                <button id="clearBtn">清空并返回上传</button>
+            </div>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <div class="page-title">
+                    <h1 id="workspaceTitle">附件上传</h1>
+                    <div id="workspaceSubtitle" class="muted">先上传审批单、交通票据、住宿清单和发票，系统完成识别后再确认行程。</div>
+                </div>
+            </header>
+
+            <div class="workspace">
+                <section class="workspace-section active" id="summaryPanel" data-nav-section data-title="预填汇总" data-subtitle="先看总体金额和归集结果，再进入行程或明细逐项核对。">
+                    <div class="summary-layout">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h2 id="summaryPanelHeading">预填汇总</h2>
+                                <span id="sourceStats" class="muted"></span>
+                            </div>
+                            <div id="summaryBody" class="panel-body">
+                                <div class="empty">等待 OCR 返回数据</div>
+                            </div>
+                        </div>
+                        <div class="next-box">
+                            <h3>处理顺序</h3>
+                            <div class="next-item"><span class="next-dot"></span><span>上传附件并等待 OCR 识别完成</span></div>
+                            <div class="next-item"><span class="next-dot pending"></span><span>确认差旅行程是否按人员、地点、时间拆分</span></div>
+                            <div class="next-item"><span class="next-dot pending"></span><span>核对预填明细后调用一键预填</span></div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="workspace-section" id="itineraryPanel" data-nav-section data-title="行程确认" data-subtitle="按人、时间、地点核对每段差旅事实，再由行程生成报销明细。">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>差旅行程单</h2>
+                            <span id="itineraryStats" class="muted"></span>
+                        </div>
+                        <div id="itineraryBody" class="panel-body">
+                            <div class="empty">暂无行程单</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="workspace-section" id="recordsPanel" data-nav-section data-title="报销明细" data-subtitle="按财务系统字段顺序核对可编辑内容，伙食补助和市内交通金额自动计算。">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2 id="recordsPanelHeading">报销明细</h2>
+                            <div class="panel-header-tools">
+                                <select id="recordSortSelect" class="compact-select is-hidden" aria-label="差旅费预填明细排序">
+                                    <option value="default">默认顺序</option>
+                                    <option value="name">按人名字母顺序</option>
+                                    <option value="time">按时间先后顺序</option>
+                                </select>
+                                <span id="recordStats" class="muted"></span>
+                            </div>
+                        </div>
+                        <div id="recordsBody" class="panel-body">
+                            <div class="empty">暂无明细</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="workspace-section" id="rulesPanel" data-nav-section data-title="指标命中" data-subtitle="展示当前页面数据与附件OCR识别结果对碰后的指标命中情况。">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2 id="rulesPanelHeading">全部指标执行情况</h2>
+                            <span id="ruleStats" class="muted"></span>
+                        </div>
+                        <div id="rulesBody" class="panel-body">
+                            <div class="empty">暂无规则结果</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="workspace-section" id="ocrPanel" data-nav-section data-title="OCR结果" data-subtitle="按附件查看 OCR 结构化数据，便于测试时核验模型返回。">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2 id="ocrPanelHeading">OCR结构化数据</h2>
+                            <span id="ocrStats" class="muted"></span>
+                        </div>
+                        <div id="ocrBody" class="panel-body">
+                            <div class="empty">暂无 OCR 数据</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <div class="ai-assistant-widget" id="aiAssistantWidget">
+        <button id="aiAssistantToggle" class="ai-assistant-toggle" title="AI助手">AI</button>
+        <div class="ai-assistant-popover" id="aiAssistantPopover" aria-label="AI智能问答">
+            <div class="ai-assistant-head">
+                <div>
+                    <strong>AI助手</strong>
+                    <span id="aiRefineStats" class="muted"></span>
+                </div>
+                <button id="aiAssistantClose" class="ai-close-btn" title="收起">×</button>
+            </div>
+            <div class="ai-refine-box compact">
+                <div class="ai-chat-shell">
+                    <div class="chat-bubble assistant">可查询来源、解释指标，也可调整当前预填数据。</div>
+                    <div id="aiRefineResult" class="ai-result" style="display:none;"></div>
+                </div>
+                <textarea id="aiInstruction" placeholder="问：张三住宿费来自哪个附件？或：把所有人的城际交通费调整为0。"></textarea>
+                <div class="actions">
+                    <button id="aiRefineBtn" class="primary" disabled>发送</button>
+                    <span class="muted">不重新 OCR</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>

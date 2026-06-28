@@ -1,0 +1,90 @@
+.finance-prefill-floating {
+    position: fixed;
+    top: 18px;
+    right: 18px;
+    width: 980px;
+    height: 760px;
+    min-width: 760px;
+    min-height: 520px;
+    background: #ffffff;
+    border: 1px solid #0b375f;
+    border-radius: 10px;
+    box-shadow: 0 18px 46px rgba(15, 23, 42, 0.24);
+    z-index: 2147483647;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    resize: both;
+    font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif;
+}
+
+.finance-prefill-header {
+    min-height: 42px;
+    background: #062b4f;
+    color: #ffffff;
+    padding: 8px 12px;
+    cursor: move;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 10px 10px 0 0;
+    border-bottom: 1px solid #0b375f;
+}
+
+.finance-prefill-header h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0;
+}
+
+.finance-prefill-header h3::before {
+    content: "";
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    background:
+        linear-gradient(#ffffff, #ffffff) 4px 5px / 10px 1px no-repeat,
+        linear-gradient(#ffffff, #ffffff) 4px 9px / 10px 1px no-repeat,
+        linear-gradient(#ffffff, #ffffff) 4px 13px / 7px 1px no-repeat,
+        #1f7ae0;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.18);
+}
+
+.finance-prefill-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.18);
+    color: #ffffff;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+.finance-prefill-close:hover {
+    background: rgba(255,255,255,.16);
+    border-color: rgba(255,255,255,.34);
+}
+
+.finance-prefill-body {
+    flex: 1;
+    padding: 0;
+    overflow: hidden;
+    background: #f5f6f8;
+}
+
+.finance-prefill-resize-handle {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 18px;
+    height: 18px;
+    cursor: nwse-resize;
+}

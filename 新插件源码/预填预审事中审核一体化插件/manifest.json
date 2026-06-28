@@ -1,0 +1,49 @@
+{
+  "manifest_version": 3,
+  "name": "AI财务预填预审审核助手",
+  "version": "1.1.0",
+  "description": "统一支持附件上传预填预审、当前页面数据提取、OCR识别和指标审核",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "downloads"
+  ],
+  "host_permissions": [
+    "http://150.88.16.204:3000/*",
+    "<all_urls>"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "floating.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "AI财务预填预审审核助手"
+  },
+  "icons": {
+    "128": "icon.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "popup.html",
+        "popup.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+﻿AI财务系统随附数据库可视化工具
+
+工具名称：
+SQLiteStudio 3.4.21 Windows x86 portable
+
+放置位置：
+tools\SQLiteStudio\SQLiteStudio\SQLiteStudio.exe
+
+用途：
+用于查看和维护 AI 财务系统 SQLite 数据库。
+
+推荐打开方式：
+1. 返回 AI财务系统 根目录。
+2. 双击 “打开主数据库.bat”，会自动使用 SQLiteStudio 打开 server\data\ai_finance.sqlite。
+3. 如果只想打开数据库工具本身，双击 “打开数据库管理工具.bat”。
+
+主数据库位置：
+server\data\ai_finance.sqlite
+
+测试数据库位置：
+server\data\finance_test.sqlite
+server\data\finance_legacy_compare.sqlite
+
+迁移说明：
+将整个 “AI财务系统” 文件夹复制到内网服务器后，本工具会随系统一起迁移。
+无需联网下载，也无需安装到 C:\Program Files。
+
+离线安装包：
+tools\_installers\sqlitestudio-3.4.21-windows-x86.zip
+
+注意：
+1. 正在运行 AI 财务系统时可以查看数据；如果要手工修改数据，建议先停止 AI 财务系统服务或备份数据库。
+2. 当前随附的是 x86 便携版，优先考虑 Windows 7、Windows Server 2016 兼容性。

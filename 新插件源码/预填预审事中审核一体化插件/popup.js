@@ -323,15 +323,10 @@ async function startUploadAndAudit() {
             preAuditData = { ...(payload.data || {}), caseId: payload.caseId || payload.data?.caseId || currentCaseId, expenseType: 'travel', dataSource: 'upload' };
             showStatus('差旅费OCR识别和业务规则预审完成，请核对命中指标后再一键预填。', 'success');
         } else {
-            if (expenseType === 'other') {
+            if (expenseType === 'other' || selectedScenario === 'smart') {
                 preAuditData = { ...buildOtherExpensePrefillData(ocrItems, successful), caseId: currentCaseId, dataSource: 'upload' };
                 await persistCaseSnapshot(preAuditData, { scenarioType: 'other', source: 'prefill-preaudit-extension' });
                 showStatus('已生成其他事项报销预填数据，请核对后再一键预填。', 'success');
-            } else if (expenseType === 'meeting') {
-                preAuditData = await buildUploadMeetingAuditData(successful, ocrItems);
-                preAuditData.dataSource = 'upload';
-                await persistCaseSnapshot(preAuditData, { scenarioType: 'meeting', source: 'prefill-preaudit-extension' });
-                showStatus('会议费OCR识别、预填归集和规则审核完成，请查看命中指标。', 'success');
             } else {
                 preAuditData = { ...buildReservedScenarioPrefillData(expenseType, ocrItems, successful), caseId: currentCaseId, dataSource: 'upload' };
                 await persistCaseSnapshot(preAuditData, { scenarioType: expenseType, source: 'prefill-preaudit-extension' });
@@ -377,8 +372,6 @@ async function extractCurrentPageAndAudit() {
         const ocrItems = collectOcrItemsWithSource(successful);
         if (pageSnapshot.scenarioType === 'travel') {
             preAuditData = await buildPageTravelAuditData(pageSnapshot, successful, ocrItems);
-        } else if (pageSnapshot.scenarioType === 'meeting') {
-            preAuditData = await buildPageMeetingAuditData(pageSnapshot, successful, ocrItems);
         } else {
             preAuditData = await buildPageOtherAuditData(pageSnapshot, successful, ocrItems);
         }
@@ -401,22 +394,16 @@ async function extractCurrentPageSnapshot() {
     const amountRes = await sendMessageToActiveTab({ action: 'getTotalAmount' });
     const paymentRes = await sendMessageToActiveTab({ action: 'getPaymentInfo' });
     const travelRes = await sendMessageToActiveTab({ action: 'extractTravelDetail' });
-    const meetingRes = await sendMessageToActiveTab({ action: 'extractMeetingDetail' });
     const travelDetail = travelRes?.data || travelRes || {};
-    const meetingDetail = meetingRes?.data || meetingRes || {};
     const subjects = subjectRes?.subjects || [];
-    const isMeeting = Boolean(meetingDetail.hasMeetingFields || meetingDetail.pageTextHint);
-    const isTravel = !isMeeting && (
-        subjects.some(subject => String(subject || '').includes('7101010209'))
-        || (Array.isArray(travelDetail.personal) && travelDetail.personal.length > 0)
-    );
+    const isTravel = subjects.some(subject => String(subject || '').includes('7101010209'))
+        || (Array.isArray(travelDetail.personal) && travelDetail.personal.length > 0);
     return {
-        scenarioType: isMeeting ? 'meeting' : (isTravel ? 'travel' : 'other'),
+        scenarioType: isTravel ? 'travel' : 'other',
         subjects,
-        attachments: isMeeting ? (meetingDetail.attachments || attachmentRes?.attachments || []) : (attachmentRes?.attachments || []),
+        attachments: attachmentRes?.attachments || [],
         pageAmount: amountRes?.totalAmount ?? null,
-        payments: isMeeting ? (meetingDetail.payments || paymentRes?.payments || []) : (paymentRes?.payments || []),
-        meetingData: meetingDetail.meetingData || {},
+        payments: paymentRes?.payments || [],
         travelData: travelDetail || {},
         pageBasics: basicsRes?.data || {},
         pageUrl: basicsRes?.data?.pageUrl || '',
@@ -618,128 +605,6 @@ async function buildPageTravelAuditData(pageSnapshot, successfulUploads, ocrItem
         ocrItems,
         uploadResults: successfulUploads,
         auditResult: payload.auditResult || payload.data || {},
-        pageExtractData: pageSnapshot,
-    };
-}
-
-function buildMeetingAttachmentPayloads(pageSnapshot = {}, successfulUploads = []) {
-    const pageAttachments = (pageSnapshot.attachments || []).map(item => ({
-        fileId: item.id || item.key || item.fileId || '',
-        fileName: item.name || item.fileName || '',
-        name: item.name || item.fileName || '',
-        attachmentType: item.attachmentType || item.type || '',
-        rowIndex: item.rowIndex,
-        source: 'page',
-    }));
-    return [
-        ...pageAttachments,
-        ...buildAuditAttachments(successfulUploads).map(item => ({ ...item, source: 'upload' })),
-    ].filter(item => item.fileName || item.name || item.fileId || item.ocrModelsData);
-}
-
-async function callMeetingPrefillAndAudit(baseBody = {}) {
-    const prefillResponse = await fetch(`${BACKEND_BASE_URL}/api/plugin/prefill`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            ...baseBody,
-            scenarioType: 'meeting',
-            source: baseBody.source || 'prefill-preaudit-extension',
-        }),
-    });
-    const prefillPayload = await prefillResponse.json();
-    if (!prefillResponse.ok || !prefillPayload.success) {
-        throw new Error(prefillPayload.error || '会议费预填归集接口调用失败');
-    }
-    const prefillData = prefillPayload.data || {};
-    const auditResponse = await fetch(`${BACKEND_BASE_URL}/api/plugin/audit`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            ...baseBody,
-            caseId: prefillPayload.caseId || baseBody.caseId,
-            scenarioType: 'meeting',
-            prefillData,
-            source: baseBody.source || 'prefill-preaudit-extension',
-        }),
-    });
-    const auditPayload = await auditResponse.json();
-    if (!auditResponse.ok || !auditPayload.success) {
-        throw new Error(auditPayload.error || '会议费规则审核接口调用失败');
-    }
-    return {
-        prefillData,
-        auditResult: auditPayload.auditResult || auditPayload.data || {},
-        caseId: auditPayload.caseId || prefillPayload.caseId || baseBody.caseId || currentCaseId,
-    };
-}
-
-async function buildUploadMeetingAuditData(successfulUploads, ocrItems) {
-    let pageBasics = {};
-    try {
-        pageBasics = await extractPageBasics();
-    } catch (error) {
-        pageBasics = {};
-    }
-    const attachments = buildMeetingAttachmentPayloads({}, successfulUploads);
-    const baseBody = {
-        caseId: currentCaseId,
-        scenarioType: 'meeting',
-        uploadResults: successfulUploads,
-        attachments,
-        ocrItems,
-        pageBasics,
-        pageUrl: pageBasics.pageUrl || '',
-        currentPageUrl: pageBasics.pageUrl || '',
-        source: 'prefill-preaudit-extension',
-    };
-    const { prefillData, auditResult, caseId } = await callMeetingPrefillAndAudit(baseBody);
-    return {
-        ...prefillData,
-        caseId,
-        scenarioType: 'meeting',
-        expenseType: 'meeting',
-        ocrItems,
-        uploadResults: successfulUploads,
-        attachments,
-        auditResult,
-    };
-}
-
-async function buildPageMeetingAuditData(pageSnapshot, successfulUploads, ocrItems) {
-    const attachments = buildMeetingAttachmentPayloads(pageSnapshot, successfulUploads);
-    const baseBody = {
-        caseId: currentCaseId,
-        scenarioType: 'meeting',
-        uploadResults: successfulUploads,
-        attachments,
-        ocrItems,
-        meetingData: pageSnapshot.meetingData || {},
-        payments: pageSnapshot.payments || [],
-        pageBasics: pageSnapshot.pageBasics || {},
-        pageUrl: pageSnapshot.pageUrl || '',
-        currentPageUrl: pageSnapshot.pageUrl || '',
-        pageSnapshot,
-        source: 'page-extract-audit-extension',
-    };
-    const { prefillData, auditResult, caseId } = await callMeetingPrefillAndAudit(baseBody);
-    return {
-        ...prefillData,
-        caseId,
-        scenarioType: 'meeting',
-        expenseType: 'meeting',
-        sourceStats: {
-            ...(prefillData.sourceStats || {}),
-            ocrItemCount: ocrItems.length,
-            uploadCount: successfulUploads.length,
-            pageAttachmentCount: (pageSnapshot.attachments || []).length,
-        },
-        meetingData: pageSnapshot.meetingData || prefillData.meetingData || {},
-        payments: pageSnapshot.payments || [],
-        attachments,
-        ocrItems,
-        uploadResults: successfulUploads,
-        auditResult,
         pageExtractData: pageSnapshot,
     };
 }
@@ -1039,8 +904,6 @@ const OCR_TYPE_ALIASES = {
     travel_request: 'travelRequest',
     meeting_notice: 'meetingNotice',
     meeting_approval: 'meetingApproval',
-    meeting_plan: 'meetingPlan',
-    fee_settlement: 'feeSettlement',
     training_notice: 'trainingNotice',
     training_approval: 'trainingApproval',
     reception_letter: 'receptionLetter',
@@ -1056,8 +919,6 @@ const OCR_TYPE_ALIASES = {
     travelRequest: 'travelRequest',
     meetingNotice: 'meetingNotice',
     meetingApproval: 'meetingApproval',
-    meetingPlan: 'meetingPlan',
-    feeSettlement: 'feeSettlement',
     trainingNotice: 'trainingNotice',
     trainingApproval: 'trainingApproval',
     receptionLetter: 'receptionLetter',
@@ -1076,8 +937,6 @@ const OCR_TYPE_LABELS = {
     travelRequest: '出差审批单',
     meetingNotice: '会议通知',
     meetingApproval: '会议审批单',
-    meetingPlan: '会议计划',
-    feeSettlement: '会议结算单/费用明细',
     trainingNotice: '培训通知',
     trainingApproval: '培训审批单',
     receptionLetter: '接待函',
@@ -1539,15 +1398,7 @@ function isTravelOcrItem(item) {
         || /出差|差旅|火车票|飞机票|行程单|住宿清单|旅客|航班|车次/.test(text);
 }
 
-function isMeetingOcrItem(item) {
-    const type = normalizeRecognizeType(item.recognizeType || item.docType || item.type);
-    const text = safeText(item);
-    return ['meetingNotice', 'meetingApproval', 'meetingPlan', 'attendanceList', 'feeSettlement'].includes(type)
-        || /会议通知|会议计划|会议计划审批表|会议结算单|会议费|参会人员名单|签到表/.test(text);
-}
-
 function inferExpenseType(ocrItems) {
-    if ((ocrItems || []).some(isMeetingOcrItem)) return 'meeting';
     return (ocrItems || []).some(isTravelOcrItem) ? 'travel' : 'other';
 }
 
@@ -1931,10 +1782,6 @@ function attachmentStatusText(result) {
 async function fillCurrentPage() {
     if (preAuditData?.dataSource === 'pageExtract' || dataSourceMode === 'page') {
         showStatus('当前为页面提取审核模式，只展示指标命中，不执行一键填写。', 'warning');
-        return;
-    }
-    if (!['travel', 'other'].includes(preAuditData?.expenseType)) {
-        showStatus('当前场景暂未接入一键填写，仅展示预填归集和审核结果。', 'warning');
         return;
     }
     syncRecordEditorsFromDom();
@@ -2574,7 +2421,6 @@ function syncRecordEditorsFromDom() {
 
 function renderActions() {
     const isPageMode = dataSourceMode === 'page' || preAuditData?.dataSource === 'pageExtract';
-    const fillSupported = ['travel', 'other'].includes(preAuditData?.expenseType);
     const startBtn = $('#startBtn');
     const extractPageBtn = $('#extractPageBtn');
     const fillBtn = $('#fillBtn');
@@ -2582,8 +2428,8 @@ function renderActions() {
     if (startBtn) startBtn.disabled = isRunning || !selectedFiles.length;
     if (extractPageBtn) extractPageBtn.disabled = isRunning;
     if (fillBtn) {
-        fillBtn.classList.toggle('is-hidden', isPageMode || !fillSupported);
-        fillBtn.disabled = isPageMode || !fillSupported || isRunning || isRefining || !(preAuditData?.records || []).length;
+        fillBtn.classList.toggle('is-hidden', isPageMode);
+        fillBtn.disabled = isPageMode || isRunning || isRefining || !(preAuditData?.records || []).length;
     }
     if (aiRefineBtn) aiRefineBtn.disabled = isRunning || isRefining;
     updateSourceModeUi();

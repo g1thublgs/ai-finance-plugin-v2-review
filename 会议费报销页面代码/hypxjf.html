@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <META HTTP-EQUIV="pragma" CONTENT="no-cache">
+    <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+    <title>会议经费申请</title>
+    <link rel="stylesheet" type="text/css" href="../../../css/style.css">
+    <link rel="stylesheet" href="../../financialAccount/bookquery/zTreeStyle.css" type="text/css">
+    <link rel="stylesheet" type="text/css" href="../common/bxgl.css">
+    <link rel="stylesheet" type="text/css" href="../../../js/layui/css/layui.css">
+    <script type="text/javascript" src="../../../js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="../../../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../../js/knockout-3.2.0.js"></script>
+    <script type="text/javascript" src="../../../js/async.js"></script>
+    <script type="text/javascript" src="../common/adam.js"></script>
+    <script type="text/javascript" src="../../../js/layui/layui.js"></script>
+    <script type="text/javascript" src="../common/bxgl.js"></script>
+    <script type="text/javascript" src="../common/customForm.js"></script>
+    <script type="text/javascript" src="../common/viewspmodel.js"></script>
+    <script type="text/javascript" src="../common/com.js"></script>
+    <script type="text/javascript" src="../../financialAccount/bookquery/jquery.ztree.core.js"></script>
+    <!--[if lte IE 8]>
+    <script type="text/javascript" src="../../../js/json2.js"></script>
+    <script type="text/javascript" src="../../../js/ie-compat.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../../../js/errorhandling.js"></script>
+    <script type="text/javascript" src="../../../officecontrol/ntko-background-min.js"></script>
+    <script type="text/javascript" src="../../../biz/fileeditor/common.js"></script>
+    <script type="text/javascript" src="../../../js/vBxglHeight.js"></script>
+    <script type="text/javascript" src="zb1.js"></script>
+    <script type="text/javascript" src="addSxsq.js"></script>
+    <script type="text/javascript" src="gsxx.js"></script>
+    
+    <script type="text/javascript" src="hypxjf.js"></script>
+    <style type="text/css">
+        .newztree {margin-top: 10px;border: 1px solid #617775;background: #f0f6e4;width:220px;height:360px;overflow-y:scroll;overflow-x:auto;}
+    </style>
+
+</head>
+<body>
+<div class="newpanel-container">
+    <div class="searResultMain">
+        <div class="searResultHead clear">
+            <div class="sraTitle fl" id="tuihui_div">
+                <moneyBox id="KY_JE" name="KY_JE" class="hide"></moneyBox>
+                <strong class="sraName">会议经费</strong>
+                <a id="warningLink" href="javascript:void(0);" onclick="showWarningDetails()" style="color: red; text-decoration: underline;">点击查看历史预警信息</a>
+            </div>
+            <div id="buttonDiv_select" class="div-button-right">
+                <button id="bt_help" class="button btn-help" onclick="help()" type=button>帮助</button>
+            </div>
+        </div>
+        <div class="layui-tab layui-tab-brief " lay-filter="docDemoTabBrief">
+                <ul class="layui-tab-title">
+                    <li id="id1" class="layui-this layui-bg-blue"
+                        onclick="showneirong('0')">申请信息
+                    </li>
+                    <li id="id2" onclick="showneirong('1')">财务信息</li>
+                </ul>
+
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <div class="toogleLay clear">
+                            <div class="toogleBox div-body-left">
+                                <div class="toogleHead clear">
+                                    <div class="sraTitle fl">
+                                        <span class="sraName">报销申请信息</span> <a class="toogleIcon"></a>
+                                    </div>
+                                </div>
+                                <div class="toogleArea">
+                                    <table class="table">
+                                        <tr>
+                                            <td>申请编号：</td>
+                                            <td id="SQ_BH"></td>
+                                            <td>申请日期：</td>
+                                            <td id="SQ_RQ"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>所属部门：</td>
+                                            <td id="SSBM_MC"></td>
+                                            <td>报销人：</td>
+                                            <td id="JBR_MC"></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="toogleBox div-body-right">
+                                <div class="toogleHead clear">
+                                    <div class="sraTitle fl">
+                                        <span class="sraName">事项申请信息</span> <a class="toogleIcon"></a>
+                                    </div>
+                                </div>
+                                <div class="toogleArea">
+                                    <table class="table">
+                                        <tr>
+                                            <td>申请编号：</td>
+                                            <td id="SQ_SQBH"
+                                                style="text-decoration:underline;font-weight: 700;color: blue;cursor:pointer;"></td>
+                                            <td>申请日期：</td>
+                                            <td id="SQ_SQRQ"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>所属部门：</td>
+                                            <td id="SQ_SSBM"></td>
+                                            <td>报销人：</td>
+                                            <td id="SQ_JBR"></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="toogleLay clear">
+                            <div class="toogleBox">
+                                <div class="toogleHead clear">
+                                    <div class="sraTitle fl">
+                                        <span class="sraName">预算指标</span>
+                                        <a class="toogleIcon"></a>
+                                    </div>
+                                <div class="div-button-right">
+                                    <button class="button btn-toggle" onclick="toggleZbDiv()"
+                                            type="button">展开/收起</button>
+										<button class="button btn-add" onclick="searchShow()"
+											type=button>查询条件</button>
+									</div>
+								</div>
+								<!-- searchform -->
+								<div id="queryzhibiao" class="row searchform-box" style="display:none">
+									
+								</div>
+								<!-- searchform end-->
+                                <div class="toogleArea" id="zb_div"></div>
+                            </div>
+                        </div>
+                        <div class="toogleLay clear">
+                            <div class="toogleBox">
+                                <div class="toogleHead clear">
+                                    <div class="sraTitle fl">
+                                        <span class="sraName">报销信息</span> <a class="toogleIcon"></a>
+                                    </div>
+                                    <div id="tips" class="div-title-left" style="display: none;color: red;background-color:yellow;font-size:16px;font-weight:600">
+                                        请注意：报销预算已超标！
+                                    </div>
+                                    <div id="xzsqd" class="div-button-right">
+                                        <button class="button btn-new" type="button" onclick="selectTemplate('03','bx')">选择已有报销单</button>
+                                        <button class="button btn-add" type="button" onclick="addNewSx()">新增报销</button>
+                                        <button class="button btn-query" type="button" onclick="selectSqsqd()">选择事项申请单
+                                        </button>
+                                        <button class="button btn-query sign-class" type="button" onclick="selectBxd('03')">
+                                            已保存报销申请单
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="toogleArea" style="overflow: auto">
+                                    <div class="div-body-left">
+                                        <table class="tableForBx" id="topcss">
+                                            <tr>
+                                                <td class="bg-titleForBx">报销事项</td>
+                                                <td  colspan="3">
+                                                    <textBox id="SQ_MC" name="JFZCSQ.SQ_MC" placeholder="" maxlength="256"
+                                                             required="true" prompt="申请名称"></textBox>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="bg-titleForBx">报销事由</td>
+                                                <td colspan="3">
+                                                    <textBox id="SQ_SY" name="JFZCSQ.SQ_SY" maxlength="500"
+                                                             placeholder="1、事项申请的依据。2、事项申请的目的及必要性。3、事项开支规模，开支标准（细项）。4、该费用是否列入预算。如字数超过500,可上传附件。"
+                                                             required="true" prompt="报销事由" multiple="true" class="multipleTextBox"></textBox>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="bg-titleForBx">天&nbsp;&nbsp;&nbsp;&nbsp;数</td>
+                                                <td >
+                                                    <numberBox id="HYTS" name="JFZCSQ.HYTS" placeholder="" maxlength="8"
+                                                               defaultValue="" required="true" prompt="天数"></numberBox>
+                                                </td>
+                                                <td class="bg-titleForBx">人&nbsp;&nbsp;&nbsp;&nbsp;数</td>
+                                                <td >
+                                                    <numberBox id="HYRS" name="JFZCSQ.HYRS" placeholder="" maxlength="8"
+                                                               defaultValue="" required="true" prompt="人数"></numberBox>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="bg-titleForBx">伙&nbsp;食&nbsp;费</td>
+                                                <td >
+                                                    <moneyBox id="HSF" name="JFZCSQ.HSF" placeholder="" maxlength="8"
+                                                              defaultValue="0" emptyAsZero="0" onChange="sumHj()"></moneyBox>
+                                                </td>
+                                                <td class="bg-titleForBx">住&nbsp;宿&nbsp;费</td>
+                                                <td >
+                                                    <moneyBox id="ZSF" name="JFZCSQ.ZSF" placeholder="" maxlength="8"
+                                                              defaultValue="0" emptyAsZero="0" onChange="sumHj()"></moneyBox>
+                                                </td>
+                                            <tr>
+                                                <td class="bg-titleForBx">场地租金</td>
+                                                <td >
+                                                    <moneyBox id="CDF" name="JFZCSQ.CDF" placeholder="" maxlength="8"
+                                                              defaultValue="0" emptyAsZero="0" onChange="sumHj()"></moneyBox>
+                                                </td>
+                                                <td class="bg-titleForBx">其他费用</td>
+                                                <td >
+                                                    <moneyBox id="QTFY" name="JFZCSQ.QTFY" placeholder="" maxlength="8"
+                                                              defaultValue="0" emptyAsZero="0" onChange="sumHj()"></moneyBox>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="bg-titleForBx">合计金额</td>
+                                                <td >
+                                                    <moneyBox id="SQ_JE" name="JFZCSQ.SQ_JE" placeholder=""
+                                                              readOnly="true" defaultValue="0"
+                                                              emptyAsZero="0"></moneyBox>
+                                                </td>
+                                                <td class="bg-titleForBx">纸质附件张数</td>
+                                                <td >
+                                                    <numberBox id="PJZS" name="JFZCSQ.PJZS" placeholder="" maxlength="10" defaultValue="0"></numberBox>
+                                                </td>
+                                            </tr>
+											<tr>
+                                                <td class="bg-titleForBx">是否预付</td>
+                                                <td  colspan="1">
+                                                	<comboBox id="SFYF" name="JFZCSQ.SFYF"   defaultValue="0"></comboBox>
+                                                </td>
+                                                <td class="bg-titleForBx">是否最终报销</td>
+                                                <td colspan="1" >
+                                                    <comboBox id="BYJ_BJ" name="JFZCSQ.BYJ_BJ"   defaultValue="Y"></comboBox>
+                                                </td>
+                                            </tr>
+                                            <tr id="hypxbh" colspan="3">
+                                                <td id="hyjhTitle" class="bg-titleForBx">会议计划序号</td>
+                                                <td colspan="5">
+                                                    <textBox id="HYPXBH" name="JFZCSQ.HYPXBH" maxlength="25"
+                                                             placeholder="" prompt="会议计划序号"/>
+                                                </td>
+                                            </tr>
+                                            <tr id="hyjybh" colspan="3" class="hide">
+                                                <td id="hyjyTitle" class="bg-titleForBx">批件名称</td>
+                                                <td colspan="5">
+                                                    <textBox id="HYJYBH" name="JFZCSQ.HYJYBH" maxlength="25" class="hide"
+                                                             placeholder="" prompt="批件名称"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="bg-titleForBx">备注</td>
+                                                <td  colspan="3">
+                                                    <textBox id="BZ" name="JFZCSQ.BZ" placeholder="" prompt="备注" maxlength="500"></textBox>
+                                                </td>
+                                            </tr>
+
+                                        </table>
+                                    </div>
+                                    <div class="div-body-right">
+                                        <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                                            <ul class="layui-tab-title" style="float: left; width: auto;">
+                                                <li id="id11" class="layui-this layui-bg-blue"
+                                                    onclick="showneirong1('0')">附件
+                                                </li>
+                                                <li id="id12" onclick="showneirong1('1')">审批跟踪</li>
+                                            </ul>
+                                            <div style="float: right; font-style: italic; color: red; margin-top: 10px;">
+                                                (退回修改后的附件信息以黄色背景色标识)
+                                            </div>
+                                            <div class="layui-tab-content"
+                                                 style="height:303px;border:1px solid #F5F5F5;">
+                                                <div class="layui-tab-item layui-show">
+                                                    <div class="row">
+                                                        <div id="fj_button" class="div-button-right"></div>
+                                                    </div>
+                                                    <dataGrid id="fj_grid" name="fj_grid" width="100%"
+                                                              hasRowNumber=false
+                                                              chooseType="multiple" pageSize=0
+                                                              pageList="15,20,50,100" query="_query" keyField="LSH"
+                                                              fixed="true">
+                                                        <column name="WJ_MC" title="附件名称" type="string" align="center"
+                                                                parser="fileshow"></column>
+                                                        <column name="FJLX_DM" title="附件类型" type="string"
+                                                                align="center"></column>
+                                                        <column name="LRR_LSH" title="创建人" type="string"
+                                                                align="center"></column>
+                                                        <column name="LR_SJ" title="创建时间" type="string"
+                                                                align="center"></column>
+                                                    </dataGrid>
+                                                    <table id="files" style="margin-top: 25px"></table>
+                                                </div>
+                                                <div class="layui-tab-item">
+                                                    <iframe id="spyj" name="spyj" frameborder="0" crolling="no"
+                                                            style="padding: 0px; width: 100%; height:250px;"></iframe>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-tab-item layui-show">
+                        <div class="layui-collapse" lay-filter="test" id="neirong01">
+                            <div class="toogleLay clear">
+                                <div id="kjshzztBtn" class="div-title-left">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <td>子账套</td>
+                                            <td id="zzt"></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="toogleLay clear">
+                                <div class="toogleBox">
+                                    <div class="toogleHead clear">
+                                        <div class="sraTitle fl">
+                                            <span class="sraName">收款人信息</span>
+                                            <a class="toogleIcon"></a>
+                                        </div>
+                                        <div id="skr" class="div-button-right">
+                                            <button id="bt_addNameList" type=button class="button btn-edit">添加收款人
+                                            </button>
+                                            <button id="bt_addGwkList" type=button class="button btn-edit">添加公务卡消费明细
+                                            </button>
+                                            <button id="bt_addGwkXx" type=button class="button btn-edit">添加公务卡信息
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="toogleArea">
+                                        <sDataGrid id="mx_grid" name="mx_grid" height="auto" beforeEdit="editSKR"
+                                                   onEdit='onEditRow_bx' editMode="delete,edit" keyField="LSH" hasRowNumber=true>
+                                            <column name="OP" title="操作" width="60px" text="删除" type="opx"
+                                                    click="deleteCurSkrRow">
+                                            </column>
+                                            <column name="SKRMC" title="收款人名称" width="100px">
+                                                <!--<textBox placeholder=""></textBox>-->
+                                            </column>
+                                            <column name="KHYHMC" title="开户银行名称" width="250px">
+                                                <!--<textBox placeholder=""></textBox>-->
+                                            </column>
+                                            <column name="YHZH" title="银行账号" width="200px">
+                                                <!--<textBox placeholder=""></textBox>-->
+                                            </column>
+                                            <column name="ZFFS_MC" vref="ZFFS_DM" title="支付方式" width="100px">
+                                                <codeList codeTable="T_DM_GY_ZFFS_SKF" displayMode="drop" onChange='changeZflx_bx' readonly="true"
+                                                          fixedPanel="true" placeholder=""></codeList>
+                                            </column>
+
+                                            <column name="ZF_JE" title="报销金额" width="100px">
+                                                <moneyBox onChange="sumZfje"></moneyBox>
+                                            </column>
+                                            <column name="BX_JE" title="刷卡金额" width="100px">
+                                                <moneyBox onChange="sumZfje" placeholder=""
+                                                          defaultValue="0"></moneyBox>
+                                            </column>
+                                            <column name="GWKHKSJ" title="公务卡消费时间" width="140px">
+                                                <dateBox displayMode="drop" fixedPanel="true"
+                                                         placeholder=""></dateBox>
+                                            </column>
+                                            <column name="CURRENCY_ZH" vref="CURRENCY_CODE" title="币种" width="120px">
+                                                <codeList extraButton="false" feedback="false"
+                                                          onchange="cheiscurrency" placeholder=""
+                                                          codeTable="T_DM_CURRENCY" displayMode="drop"
+                                                          fixedPanel="true"></codeList>
+                                            </column>
+                                            <column name="ISGPIMP" vref="GPIMP_DM" title="是否政府采购" width="120px">
+                                                <codeList extraButton="false" feedback="false"
+                                                          onchange="cheisgpimp" placeholder=""
+                                                          codeTable="T_DM_GPIMP" displayMode="drop"
+                                                          fixedPanel="true"></codeList>
+                                            </column>
+                                            <column name="HWLX" vref="HWTYPE_DM" title="支出类型" width="120px">
+                                                <codeList extraButton="false" feedback="false"
+                                                          onchange="cheishwlx" placeholder=""
+                                                          codeTable="T_DM_HWTYPE"
+                                                          displayMode="drop" fixedPanel="true"></codeList>
+                                            </column>
+
+                                            <hideColumn name="SKZHXXB_LSH" title="收款账户信息表流水号" hidden="hidden">
+                                                <textBox></textBox>
+                                            </hideColumn>
+                                            <hideColumn name="BANKCODE" title="银行联行号" hidden="hidden">
+                                                <textBox></textBox>
+                                            </hideColumn>
+                                            <hideColumn name="SJLY" title="数据来源" hidden="hidden">
+                                                <textBox></textBox>
+                                            </hideColumn>
+                                        </sDataGrid>
+
+                                        <table width="100%">
+                                            <tr>
+                                                <td width="45px">合计：</td>
+                                                <td width="155px">
+                                                    <moneyBox id="ZFJEHJ" name="JFZCSQ.ZFJEHJ" readonly="true"
+                                                              width="150px"></moneyBox>
+                                                </td>
+                                                <td width="20px">元</td>
+                                                <td>
+                                                    <!--<button id="addHygs" type=button onclick="javaScript:addHygs()" class="button btn-edit">会议公示维护-->
+                                                <!--</button>-->
+                                                   </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!--会计审核html片段 begin-->
+                            <div class="toogleLay clear hide" id="kjshDiv">
+                                <div class="toogleBox">
+                                    <div class="toogleHead clear">
+                                        <div class="sraTitle fl">
+                                            <span class="sraName">财务审核</span>
+                                            <a class="toogleIcon"></a>
+                                        </div>
+                                        <div id="kjshaddareas" class="div-title-left">
+                                            <table class="table table-bordered">
+                                                <tr>
+                                                    <td>是否预付</td>
+                                                    <td id="yf"></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div id="kjshBtn" class="div-button-right">
+                                            <button id="bt_ppYthzb" class="button btn-edit" type=button>自动匹配一体化指标</button>
+                                            <button id="bt_setZjlyykm" class="button btn-edit" type=button>选择资金来源与科目模板</button>
+                                            <button id="bt_setAll" class="button btn-edit" type=button>批量设置</button>
+                                            <button id="bt_addRow" class="button btn-new" type=button>增加行</button>
+                                            <button id="bt_delRow" class="button btn-delete" type=button>删除行
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="toogleArea" style="overflow-x:auto;">
+                                        <table id="kjshTab" class="table table-bordered">
+                                            <tr>
+                                                <th><input name="FILTER.selectAll" type="checkbox" id="selectAll"
+                                                           onclick="selectAll()" value='' /></th>
+                                                <th>收款方名称</th>
+                                                <th>预算指标</th>
+                                                <th>资金来源</th>
+                                                <th>是否本年</th>
+                                                <th>预算总金额</th>
+                                                <th>可执行预算</th>
+                                                <th>会计科目</th>
+                                                <th>安排金额</th>
+                                                <th>汇款用途(资金用途)</th>
+                                                <th>一体化指标</th>
+                                                <th>资金往来对象类别</th>
+                                                <th>附言</th>
+                                                <th>备注</th>
+                                            </tr>
+                                        </table>
+                                        <table width="100%">
+                                            <tr>
+                                                <td width="45px">合计：</td>
+                                                <td width="155px">
+                                                    <moneyBox id="APJEHJ" name="JFZCSQ.APJEHJ" width="150px"></moneyBox>
+                                                </td>
+                                                <td width="20px">元</td>
+                                                <td>
+                                                    <!--<button id="addPxgs" type=button onclick="javaScript:addPxgs()" class="button btn-edit">培训公示维护-->
+                                                    <!--</button>-->
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--会计审核html片段 end-->
+                        </div>
+                    </div>
+                    <div id="spbutton" class="row toogleButton-center"></div>
+                </div>
+            </div>
+    </div>
+</div>
+<loading>
+    <div id="processdiv" class="process_div" style="display:block;" align="center">
+        <img id="pic" src="../../images/progressbar.gif">
+        <br>
+        <div id="msgdiv" class="processmsg_div">数据生成中，请稍候...</div>
+    </div>
+</loading>
+<textBox id="LSH" name="JFZCSQ.LSH" class="hide"></textBox>
+<textBox id="SQLX_DM" name="JFZCSQ.SQLX_DM" class="hide"></textBox>
+<textBox id="SQ_LSH" name="JFZCSQ.SQ_LSH" class="hide"></textBox>
+<moneyBox id="YS_JE" name="JFZCSQ.YS_JE" class="hide"></moneyBox>
+<textBox id="JHLSH" name="JFZCSQ.JHLSH" class="hide"></textBox>
+<textBox id="THCS" name="JFZCSQ.THCS" class="hide"></textBox>
+</body>
+</html>

@@ -1,0 +1,1389 @@
+<html style="height: auto; min-height: 100%;"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>网络版财务软件CWRJ_3.5.25_SJ_20260408</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.7 -->
+    <link rel="stylesheet" href="/cw/console/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="/cw/console/bower_components/font-awesome/css/font-awesome.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="/cw/console/bower_components/Ionicons/css/ionicons.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/cw/console/dist/css/AdminLTE.min.css">
+    <!-- AdminLTE Skins. Choose a skin from the css/skins
+         folder instead of downloading all of them to reduce the load. -->
+    <link rel="stylesheet" href="/cw/console/dist/css/skins/_all-skins.min.css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script  src="/cw/js/json2.js"></script>
+    <script src="/cw/js/html5shiv.min.js"></script>
+    <script src="/cw/js/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Google Font -->
+    <link rel="stylesheet" href="/cw/css/googlefont.css">
+    <link rel="stylesheet" type="text/css" href="/cw/biz/css/index.css">
+<style>
+    .dropdown-menu ul {
+        list-style: none;
+        padding: 8px;
+    }
+
+    .main-content {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0px;
+        margin-left: 0;
+        overflow: hidden;
+    }
+
+    .main-content-expanded {
+        left: 190px;
+    }
+
+    .main-content-collapsed {
+        left: 0px;
+    }
+
+    .main-sidebar-container {
+        overflow: hidden;
+        width: 190px;
+        height: 100%;
+        position: relative;
+    }
+    .main-sidebar {
+        overflow: scroll;
+        width:210px;
+        position: absolute;
+        top:-50px;
+        bottom:0;
+        border-right: solid 1px #0b1722;
+    }
+
+    .collapse-sidebar {
+        position: relative;
+        overflow: hidden;
+        width:15px;
+        position: absolute;
+        top:-50px;
+        bottom:0;
+        z-index:999;
+        background-color:#4E6490;
+        color:white;
+    }
+
+    body.sidebar-collapse .main-sidebar {
+        overflow: hidden;
+    }
+    .jj_menu_size{
+        font-size: 12px;
+    }
+
+</style><script>
+    var maxNumber = 5;
+</script></head>
+
+
+<body class="skin-blue sidebar-mini" style="position: absolute; inset: 0px; overflow: hidden; height: auto; min-height: 100%;">
+<header class="main-header" style="position: absolute;top:0;left:0;right:0">
+    <!-- Header Navbar: style can be found in header.less -->
+    <nav class="navbar navbar-static-top">
+        <a id="toggleId" href="#" class="sidebar-toggle" role="button" style="height:50px;filter:progid:DXImageTransform.Microsoft.Gradient(gradientType=0,startColorStr='#ffffff',endColorStr='#dfdfdf');background: linear-gradient(#ffffff, #dfdfdf);">网络版财务软件
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </a>
+        <div class="navbar-custom-menu" style="font-family: '微软雅黑';padding-left: 205px;border-bottom:solid 1px #C0C0C0;filter:progid:DXImageTransform.Microsoft.Gradient(gradientType=0,startColorStr='#ffffff',endColorStr='#dfdfdf');background: linear-gradient(#ffffff, #dfdfdf);">
+            <table id="headermenu" style="height: 50px; width: 889px; background: linear-gradient(rgb(255, 255, 255), rgb(223, 223, 223));" align="right;">
+                <tbody><tr>
+                    <td>
+                        <div id="first"></div><ul class="menuHevor"><li><a href="javascript:void(0)" class="sidebar-togglebar3" urlpath="null" val="b800" name="topmenu" role="button"><span>报销管理</span></a></li></ul>
+                    </td>
+                    <td>
+                        <div id="moreMenu"></div>
+                    </td>
+                    <td id="ztmc" style="width: 293px; border-left: 1px solid rgb(192, 192, 192); padding-left: 10px; padding-right: 10px;">
+                        <div align="right"><span id="resourceName"></span></div>
+                        <div align="right"><span id="loginDate">2026-05-06</span></div>
+                    </td>
+                    <td style="width:130px;">
+                        <ul class="nav navbar-nav">
+                            <li class="dropdown user user-menu">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <table>
+                                        <tbody><tr>
+                                            <td><img src="/cw/console/dist/img/menubar/qie_32.png">
+                                            </td>
+                                            <td>&nbsp;罗桂森</td>
+                                            <td><a href="#" class="fa fa-caret-down"></a></td>
+                                        </tr>
+                                    </tbody></table>
+                                </a>
+                                <ul>
+                                    <li><a href="#" onclick="window.location.reload()" class="fa fa-home">&nbsp;&nbsp;主页</a></li>
+                                    <li><a href="#" onclick="addTab('x1','修改密码', '/cw/biz/resetpassword.html')" class="fa fa-signing">&nbsp;&nbsp;密码修改</a></li>
+                                    <li><a href="#" onclick="window.open('http://100.12.104.51:8080/swyw/WsslBLH_wsslMain.do#','')" class="fa fa-lightbulb-o">&nbsp;&nbsp;网上提问</a></li>
+                                    <li><a href="#" onclick="logout()" class="fa fa-signing">&nbsp;&nbsp;注销</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+    </nav>
+</header>
+<form></form>
+<div style="position: absolute;width:100%;top:50px;bottom:0;overflow: hidden;">
+    <div class="main-sidebar-container">
+        <!-- Left side column. contains the logo and sidebar -->
+        <aside class="main-sidebar">
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar">
+                <!-- sidebar menu: : style can be found in sidebar.less -->
+                <ul id="xmenu" class="sidebar-menu tree" data-widget="tree" style="margin-top: 50px;">
+                    <!--ko template: { name: 'menu-template', foreach: menus}-->
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">我的事项</span>
+            <!--ko if:$data.children && $data.children.length>0-->
+            <span class="pull-right-container"></span>
+            <!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0-->
+        <ul class="treeview-menu" data-bind="foreach:children" style="">
+            <!--ko template:{name:'menu-template',data:$data}-->
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">待办事项</span>
+            <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+    </li>
+<!--/ko-->
+        
+            <!--ko template:{name:'menu-template',data:$data}-->
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">已办事项审批</span>
+            <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+    </li>
+<!--/ko-->
+        
+            <!--ko template:{name:'menu-template',data:$data}-->
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">已办报销审批 </span>
+            <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+    </li>
+<!--/ko-->
+        
+            <!--ko template:{name:'menu-template',data:$data}-->
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">已办核销审批</span>
+            <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+    </li>
+<!--/ko-->
+        </ul>
+        <!--/ko-->
+    </li>
+
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">事项审批</span>
+            <!--ko if:$data.children && $data.children.length>0-->
+            <span class="pull-right-container"></span>
+            <!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0-->
+        <ul class="treeview-menu" data-bind="foreach:children" style="">
+            <!--ko template:{name:'menu-template',data:$data}-->
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">会议</span>
+            <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+    </li>
+<!--/ko-->
+        
+            <!--ko template:{name:'menu-template',data:$data}-->
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">培训</span>
+            <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+    </li>
+<!--/ko-->
+        
+            <!--ko template:{name:'menu-template',data:$data}-->
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">差旅</span>
+            <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+    </li>
+<!--/ko-->
+        
+            <!--ko template:{name:'menu-template',data:$data}-->
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">公务接待</span>
+            <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+    </li>
+<!--/ko-->
+        
+            <!--ko template:{name:'menu-template',data:$data}-->
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">其他事项</span>
+            <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+    </li>
+<!--/ko-->
+        </ul>
+        <!--/ko-->
+    </li>
+
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick" class="">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">报销申请</span>
+            <!--ko if:$data.children && $data.children.length>0-->
+            <span class="pull-right-container"></span>
+            <!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0-->
+        <ul class="treeview-menu" data-bind="foreach:children" style="display: block;">
+            <!--ko template:{name:'menu-template',data:$data}-->
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick" class="onClickOpen">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">会议费</span>
+            <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+    </li>
+<!--/ko-->
+        
+            <!--ko template:{name:'menu-template',data:$data}-->
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">培训费</span>
+            <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+    </li>
+<!--/ko-->
+        
+            <!--ko template:{name:'menu-template',data:$data}-->
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">差旅费</span>
+            <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+    </li>
+<!--/ko-->
+        
+            <!--ko template:{name:'menu-template',data:$data}-->
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">公务接待费</span>
+            <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+    </li>
+<!--/ko-->
+        
+            <!--ko template:{name:'menu-template',data:$data}-->
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">其他事项(含三代)</span>
+            <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+    </li>
+<!--/ko-->
+        
+            <!--ko template:{name:'menu-template',data:$data}-->
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">银行托收</span>
+            <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+    </li>
+<!--/ko-->
+        
+            <!--ko template:{name:'menu-template',data:$data}-->
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">人员经费支出</span>
+            <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+    </li>
+<!--/ko-->
+        </ul>
+        <!--/ko-->
+    </li>
+
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">打印申请单</span>
+            <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+    </li>
+
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">数据查询</span>
+            <!--ko if:$data.children && $data.children.length>0-->
+            <span class="pull-right-container"></span>
+            <!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0-->
+        <ul class="treeview-menu" data-bind="foreach:children" style="">
+            <!--ko template:{name:'menu-template',data:$data}-->
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">事项待核销情况查询</span>
+            <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+    </li>
+<!--/ko-->
+        
+            <!--ko template:{name:'menu-template',data:$data}-->
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">事项审批查询</span>
+            <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+    </li>
+<!--/ko-->
+        
+            <!--ko template:{name:'menu-template',data:$data}-->
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">报销审批查询</span>
+            <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+    </li>
+<!--/ko-->
+        
+            <!--ko template:{name:'menu-template',data:$data}-->
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">事项报销执行情况</span>
+            <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+    </li>
+<!--/ko-->
+        
+            <!--ko template:{name:'menu-template',data:$data}-->
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">食堂购货和公车统计</span>
+            <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+    </li>
+<!--/ko-->
+        </ul>
+        <!--/ko-->
+    </li>
+
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">核销申请</span>
+            <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+    </li>
+
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">个人授权</span>
+            <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+    </li>
+
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons"></i> <span data-bind="text:title">切换账套</span>
+            <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0--><!--/ko-->
+    </li>
+<!--/ko-->
+                </ul>
+
+            </section>
+            <!-- /.sidebar -->
+        </aside>
+    </div>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div border="false" id="tabs" class="main-content main-content-expanded" style="font-size: 12px">
+        <div class="collapse-sidebar">
+            <span id="collapseButton" class="glyphicon glyphicon-chevron-left" data-toggle="push-menu" onclick="collapseAction();" style="top: 455px;"></span>
+        </div>
+        <ul class="nav nav-tabs" id="myTab" style="text-align: right; margin-left:12px;">
+            <input type="checkbox" checked="true" id="loopId" align="center" style="padding-top: 8px;">
+            <a style="margin-right: 30px;font-size: 14px;">标签循环使用</a>
+        <li id="tab-b800700501" code="b800700501" style="text-align: left" title="会议费" class="active" closable="true" mutex="false"><a data-toggle="tab" href="#tab-content-b800700501" style="width: 847px; padding-left: 10px;">会议费</a><i class="fa fa-times" onclick="deleteTab(&quot;b800700501&quot;)"></i></li></ul>
+        <div class="tab-content" style="height: 100%; margin-left:12px;"><div id="tab-content-b800700501" class="active"><iframe id="iframepage4" name="iframepage5" width="100%" height="100%" frameborder="0" scrolling="no" src="/cw/biz/nk/jfzcsq/hypxjf.html?tk=ed609016c55c6e7828f67e4f3bda8773"></iframe></div></div>
+    </div>
+</div>
+
+<!-- Add the sidebar's background. This div must be placed
+     immediately after the control sidebar -->
+<div class="control-sidebar-bg"></div>
+<!-- ./wrapper -->
+
+<!-- jQuery 3 -->
+<script src="/cw/js/jquery-1.11.2.min.js"></script>
+<script src="/cw/biz/index.js"></script>
+<script src="/cw/js/knockout-3.2.0.js"></script>
+<script src="/cw/js/async.js"></script>
+<script src="/cw/js/adam.min.js"></script>
+<script src="/cw/biz/earlywarnalert.js"></script>
+<!-- Bootstrap 3.3.7 -->
+<script src="/cw/console/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<!-- FastClick -->
+<script src="/cw/console/bower_components/fastclick/lib/fastclick.js"></script>
+<!-- AdminLTE App -->
+<script src="/cw/console/dist/js/adminlte.min.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="/cw/console/dist/js/demo.js"></script>
+
+<script src="/cw/js/jquery.mousewheel.min.js"></script>
+<!--引入toast提示插件begin-->
+<script type="text/javascript" src="/cw/js/toastr/toastr.min.js"></script>
+<link rel="stylesheet" href="/cw/js/toastr/toastr.min.css">
+<!--引入toast提示插件end-->
+<script type="text/html" id="menu-template">
+    <li class="treeview" name="treeauto">
+        <a href="#" data-bind="click:$root.menuClick">
+            <i data-bind="css:icons" ></i> <span data-bind="text:title"></span>
+            <!--ko if:$data.children && $data.children.length>0-->
+            <span class="pull-right-container"></span>
+            <!--/ko-->
+        </a>
+        <!--ko if:$data.children && $data.children.length>0-->
+        <ul class="treeview-menu" data-bind="foreach:children">
+            <!--ko template:{name:'menu-template',data:$data}--><!--/ko-->
+        </ul>
+        <!--/ko-->
+    </li>
+</script>
+<script type="text/html" id="search-menu">
+    <li>
+        <a href="#" data-bind="click:$root.menuClick,text:title" style="color: black"></a>
+    </li>
+
+</script>
+<script>
+    // dialog句柄
+    var dialogHandler = null;
+    var menuLength;
+    // 关闭dialog的方法
+    function closeDialog() {
+        if (dialogHandler) dialogHandler.close();
+    }
+
+    /**
+     * 凭证特效
+     * @param flag
+     */
+    function voucherToggle(flag) {
+        var x = -1;
+        var isOpen = !$('body').hasClass('sidebar-collapse');
+        if (isOpen) x = 1;
+        if (x * flag > 0) $('#toggleId').click();
+    }
+
+    function logout() {
+        $.adam.ajax({
+            action: "net.hitina.biz.console.menu_resource",
+            method: "logout",
+            data: {},
+            success: function (data) {
+            }
+        });
+        document.forms[0].action = "/cw/logout";
+        document.forms[0].submit();
+    }
+
+
+    function init() {
+
+        addTab("x", "首页", "/cw/biz/shortcut/shortCutIndex.ftl");
+        resetCollapseButtonPos();
+        function ViewModel(menus) {
+            this.menus = menus;
+
+            var leaf = [], findLeaf = function (menu) {
+                if (menu.children && menu.children.length > 0) {
+                    $(menu.children).each(function () {
+                        findLeaf(this);
+                    });
+                } else {
+                    leaf.push(menu);
+                }
+            };
+
+            $(menus).each(function () {
+                findLeaf(this);
+            });
+
+            this.menuClick = function (data, event) {
+                // add by lihaiyang 20180929 用户重复登录，点击菜单踢用户功能不好使，以下为补救处理。
+                $.ajax({
+                    url: path + "/net/hitina/biz/console/menu_resource.isExistAccounts.svc",
+                    type: 'post',
+                    data: {code: '250'},
+                    success: function (d) {
+                        var data = eval("(" + d + ")")
+                        if (data.status != 200) {
+                            $.alert("该账号在其他设备登录！您需要重新登录");
+                            setTimeout(function () {
+                                logout();
+                            }, 1200);
+
+
+                        }
+                    },
+                    error: function () {
+                        logout();
+                    }
+                });
+                var re = /[\r\n]/g;
+                var ystr = $(event.currentTarget).parent().text();
+                var xstr = ystr.replace(re, "");
+                if (ystr != xstr) {
+                    $(".onClickOpen").removeClass("onClickOpen");
+                    $(event.currentTarget).addClass("onClickOpen");
+                }
+                if (data.link && data.link.length > 0) {
+                    addTab(data.code, data.title, data.link, data.closable, data.mutex);
+                }
+                $("#menu-dropdown").hide();
+                if("b800994"==data.code){
+                    changeBXAccount();
+                }
+            };
+
+
+            var searchMenus = this.searchMenus = ko.observableArray([]);
+            this.searchText = ko.observable("");
+
+            function doSearch(value) {
+                if ($("#menu-dropdown").is(":hidden")) {
+                    $("#menu-dropdown").show();
+                }
+
+                var array = [];
+                for (var i = 0; i < leaf.length; i++) {
+                    if (leaf[i].title.indexOf(value) != -1) {
+                        array.push(leaf[i]);
+                    }
+                }
+                searchMenus(array);
+            }
+
+            var input_timer, drop_timer;
+            this.searchText.subscribe(function (value) {
+                window.clearTimeout(input_timer);
+                input_timer = setTimeout(function () {
+                    if (value != null && value.length > 0) {
+                        doSearch(value);
+                    }
+                }, 300);
+            });
+
+
+            $(".search-container").focusin(function (event) {
+                window.clearTimeout(drop_timer);
+            }).focusout(function () {
+                drop_timer = setTimeout(function () {
+                    $("#menu-dropdown").hide();
+                }, 300);
+
+            });
+
+            $("#search-input").keyup(function (event) {
+                var dom = document.getElementById("search-input");
+                if (event.which == 13 && dom.value.length > 0) {
+                    doSearch(dom.value);
+                }
+            });
+
+
+
+        }
+
+        var path = '/cw';
+        var menuCodeVal;
+        var qbkd = document.getElementById("headermenu").clientWidth;//菜单栏全部长度
+        document.getElementById("headermenu").style.width = qbkd + "px";
+        var menu_kd = qbkd - 200 - 130;
+        $.adam.ajax({
+            action: "net.hitina.biz.console.menu_resource",
+            method: "loadFirstMenus",
+            success: function (data) {
+                var menus = data.menu;
+                menuLength=menus.length;
+                maxNumber = data.maxNumber;
+                if (menu_kd > menus.length * 65) {
+                    var html = '';
+                    for (var i = 0; i < menus.length; i++) {
+                        html = '<li><a href="javascript:void(0)" class="' + menus[i].iconclass + '" urlpath="'+menus[i].value+'" val="' + menus[i].code
+                                + '" name="topmenu" role="button"><span>' + menus[i].title + '</span></a></li>' + html;
+                    }
+                    html = '<ul class="menuHevor">' + html + '</ul>'
+                    $('#first').after(html);
+                } else {
+                    var input_count = parseInt(menu_kd / 65);
+                    var input_button = menu_kd - input_count * 65;
+                    if (input_button < 8) {
+                        input_count = input_count - 1
+                    }
+
+                    var html = '';
+                    for (var i = 0; i < input_count; i++) {
+                        html = '<li><a href="javascript:void(0)" class="' + menus[i].iconclass + '" urlpath="'+menus[i].value+'" val="' + menus[i].code
+                                + '" name="topmenu" role="button"><span>' + menus[i].title + '</span></a></li>' + html;
+                    }
+                    html = '<ul class="menuHevor">' + html + '</ul>'
+                    $('#first').after(html);
+
+                    $('#moreMenu').after('<li><a href="javascript:void(0)" style="width:8px;" name="moreMenu" role="button">' +
+                            '<img src="../console/dist/img/menubar/barcaret-left.png" height="50px" width="8px"><span></span></a></li>');
+                }
+
+                $('a[name="topmenu"]').click(function () {
+                    menuCodeVal = $(this).attr("val");
+                    topMenuClick($(this).attr("urlpath"));
+                });
+                //只有报销管理 b800 菜单时，显示待办事项页面
+                if($('a[name="topmenu"]').length == 1 && $('a[val="b800"]').length == 1) {
+                    $('a[val="b800"]').click();
+                }
+            }
+        });
+
+        function resetCollapseButtonPos(){
+            $("#collapseButton").css("top",(($(".main-sidebar").height())/2));
+        }
+        function topMenuClick(urlpath) {
+
+            $.ajax({
+                url: path + "/net/hitina/biz/console/menu_resource.isExistAccounts.svc",
+                type: 'post',
+                data: {code: '250'},
+                success: function (d) {
+                    var data = eval("(" + d + ")")
+                    if (data.status != 200) {
+                        $.alert("该账号在其他设备登录！您需要重新登录");
+                        setTimeout(function () {
+                            logout();
+                        }, 1000);
+
+
+                    }
+                },
+                error: function () {
+                    logout();
+                }
+            });
+            if("b999"==menuCodeVal){
+                window.open(path+urlpath,"资金监管");
+            }else if ("b200,b300,b400,b500,b800,b120,b130,b131,b132,b150".indexOf(menuCodeVal) == -1) {
+                leftMenuChange("");
+            } else {
+                if("b130"==menuCodeVal||"b131"==menuCodeVal||"b132"==menuCodeVal){
+                    openSelectYSAccount();
+                }else if("b150"==menuCodeVal){
+                    openSelectCBAccount();
+                }else if ("b800"==menuCodeVal || "b120"==menuCodeVal) {
+                    openSelectBXAccount();
+                }else{
+                    if (isExistAccounts()) {
+                        openSelectAccount();
+                    } else {
+                        leftMenuChange("");
+                    }
+                }
+            }
+        }
+
+        function openSelectCBAccount() {
+            var loginDate = "2026-05-06";
+            dialogHandler = $.showDialog({
+                url: "/cw/biz/financialReport/select_CB_account.html?code=" + menuCodeVal + "&loginDate=" + loginDate,
+                width: "750px",
+                height: "420px",
+                title: "财报年度选择",
+                buttons: [{
+                    text: "确&nbsp;&nbsp;定",
+                    primary: true,
+                    handler: function (cwindow) {
+                        var array = cwindow.getAccountBookValue();
+                        if (array != undefined) {
+                            if (array[0] == undefined || array[0] == "") {
+                                $.alert("请选择预算年度！");
+                                return false;
+                            }
+                            var ysnd = array[0];
+                            $.adam.ajax({
+                                action: "net.hitina.biz.financialReport.financialFrame",
+                                method: "setSessionAccountBook",
+                                sync:true,
+                                data: {
+                                    ysnd: ysnd,
+                                    code: array[1]
+                                },
+                                success: function (data, code, message) {
+                                    closeDialog();
+                                    leftMenuChange("");
+                                    closeTabExt(true);
+                                    $("#menu-dropdown").hide();
+                                    if ($('#myTab li').size() > 0){
+                                        $('#myTab li').eq($('#myTab li').size() - 1).find("a").tab('show');
+                                        if($('#myTab li').eq(0).find("a")[0].innerHTML=="首页"){
+                                            // $('#tab-content-x').find("iframe")[0].attr('src', $('#tab-content-x').find("iframe")[0].attributes.src);
+                                            $('#tab-content-x').find("iframe")[0].src=$('#tab-content-x').find("iframe")[0].src;
+                                        }
+                                    }
+                                }
+                            });
+
+                        }
+
+                    }
+                }, {
+                    text: "关&nbsp;&nbsp;闭",
+                    primary: false,
+                    dismissible: true
+                }]
+            });
+        }
+
+        function openSelectYSAccount() {
+            var loginDate = "2026-05-06";
+            dialogHandler = $.showDialog({
+                url: "/cw/biz/ysgl/common/select_account.html?code=" + menuCodeVal + "&loginDate=" + loginDate,
+                width: "750px",
+                height: "420px",
+                title: "预算年度选择",
+                buttons: [{
+                    text: "确&nbsp;&nbsp;定",
+                    primary: true,
+                    handler: function (cwindow) {
+                        var array = cwindow.getAccountBookValue();
+                        if (array != undefined) {
+                            if (array[0] == undefined || array[0] == "") {
+                                $.alert("请选择预算年度！");
+                                return false;
+                            }
+                            var ysnd = array[0];
+                            $.adam.ajax({
+                                action: "net.hitina.biz.ysgl.common.commonUtil",
+                                method: "setSessionAccountBook",
+                                sync:true,
+                                data: {
+                                    ysnd: ysnd,
+                                    code: array[1]
+                                },
+                                success: function (data, code, message) {
+                                    closeDialog();
+                                    leftMenuChange("");
+                                    closeTabExt(false);
+                                    $("#menu-dropdown").hide();
+                                    addTab("b800500", "待办事项", "/cw/biz/agency/showtodo.html");
+                                }
+                            });
+
+                        }
+
+                    }
+                }, {
+                    text: "关&nbsp;&nbsp;闭",
+                    primary: false,
+                    dismissible: true
+                }]
+            });
+        }
+
+        function changeBXAccount() {
+            var loginDate = "2026-05-06";
+            dialogHandler = $.showDialog({
+                url: "/cw/biz/nk/common/select_account.html?code=" + menuCodeVal + "&loginDate=" + loginDate,
+                width: "750px",
+                height: "420px",
+                title: "账套选择",
+                buttons: [{
+                    text: "确&nbsp;&nbsp;定",
+                    primary: true,
+                    handler: function (cwindow) {
+                        var array = cwindow.getAccountBookValue();
+                        if (array != undefined) {
+                            if (array[0] == undefined || array[0] == "") {
+                                $.alert("请选择账套！");
+                                return false;
+                            }
+                            var accountId = array[0];
+                            $.adam.ajax({
+                                action: "net.hitina.biz.nk.common.commonUtil",
+                                method: "setSessionAccountBook",
+                                data: {
+                                    accountBookId: accountId,
+                                    code: array[1],
+                                    businessDate: array[2]
+                                },
+                                success: function (data, code, message) {
+                                    closeDialog();
+                                    leftMenuChange(accountId);
+                                    closeTabExt(array[3]);
+                                    deleteTab("b800500", "force")
+                                    $("#menu-dropdown").hide();
+                                    ztView(array[4]);
+                                    addTab("b800500", "待办事项", "/cw/biz/agency/showtodo.html");
+                                }
+                            });
+
+                        }
+
+                    }
+                }, {
+                    text: "确定并设置为默认",
+                    primary: true,
+                    handler: function (cwindow) {
+                        var array = cwindow.getAccountBookValue();
+                        if (array != undefined) {
+                            if (array[0] == undefined || array[0] == "") {
+                                $.alert("请选择账套！");
+                                return false;
+                            }
+                            var accountId = array[0];
+                            $.adam.ajax({
+                                action: "net.hitina.biz.nk.common.commonUtil",
+                                method: "setSessionAccountBook",
+                                data: {
+                                    accountBookId: accountId,
+                                    code: array[1],
+                                    businessDate: array[2]
+                                },
+                                success: function (data, code, message) {
+                                    closeDialog();
+                                    setDefaultAccountBXBook(accountId);
+                                    leftMenuChange(accountId);
+                                    closeTabExt(array[3]);
+                                    $("#menu-dropdown").hide();
+                                    // var len = array[4].length;
+                                    // if (len > 12) {
+                                    //     var wid = len * 14 + 20;
+                                    //     $("#ztmc").width(wid + "px");
+                                    // }
+                                    ztView(array[4])
+                                    addTab("b800500", "待办事项", "/cw/biz/agency/showtodo.html");
+                                }
+                            });
+
+                        }
+                    }
+                }, {
+                    text: "关&nbsp;&nbsp;闭",
+                    primary: false,
+                    dismissible: true
+                }]
+            });
+        }
+        function openSelectBXAccount() {
+            var loginDate = "2026-05-06";
+            $.adam.ajax({
+                action: "net.hitina.biz.nk.common.commonUtil",
+                method: "getAccount",
+                data: {},
+                success: function (data, code, message) {
+                    var array = new Array();
+                    array[0] = data.mrzt;
+                    array[1] = menuCodeVal;
+                    array[2] = loginDate;
+                    array[3] = false;
+                    array[4] = data.mrztmc;
+                    var accountId = array[0];
+                    if (accountId == "" || accountId == undefined) {
+                        dialogHandler = $.showDialog({
+                            url: "/cw/biz/nk/common/select_account.html?code=" + menuCodeVal + "&loginDate=" + loginDate,
+                            width: "750px",
+                            height: "420px",
+                            title: "账套选择",
+                            buttons: [{
+                                text: "确&nbsp;&nbsp;定",
+                                primary: true,
+                                handler: function (cwindow) {
+                                    var array = cwindow.getAccountBookValue();
+                                    if (array != undefined) {
+                                        if (array[0] == undefined || array[0] == "") {
+                                            $.alert("请选择账套！");
+                                            return false;
+                                        }
+                                        var accountId = array[0];
+                                        $.adam.ajax({
+                                            action: "net.hitina.biz.nk.common.commonUtil",
+                                            method: "setSessionAccountBook",
+                                            data: {
+                                                accountBookId: accountId,
+                                                code: array[1],
+                                                businessDate: array[2]
+                                            },
+                                            success: function (data, code, message) {
+                                                closeDialog();
+                                                leftMenuChange(accountId);
+                                                closeTabExt(array[3]);
+                                                $("#menu-dropdown").hide();
+                                                ztView(array[4]);
+                                                if("b800"==menuCodeVal){
+                                                    addTab("b800500", "待办事项", "/cw/biz/agency/showtodo.html");
+                                                    earlyInfoProcess();// 预警信息查询
+                                                }
+
+                                            }
+                                        });
+
+                                    }
+
+                                }
+                            }, {
+                                text: "确定并设置为默认",
+                                primary: true,
+                                handler: function (cwindow) {
+                                    var array = cwindow.getAccountBookValue();
+                                    if (array != undefined) {
+                                        if (array[0] == undefined || array[0] == "") {
+                                            $.alert("请选择账套！");
+                                            return false;
+                                        }
+                                        var accountId = array[0];
+                                        $.adam.ajax({
+                                            action: "net.hitina.biz.nk.common.commonUtil",
+                                            method: "setSessionAccountBook",
+                                            data: {
+                                                accountBookId: accountId,
+                                                code: array[1],
+                                                businessDate: array[2]
+                                            },
+                                            success: function (data, code, message) {
+                                                closeDialog();
+                                                setDefaultAccountBXBook(accountId);
+                                                leftMenuChange(accountId);
+                                                closeTabExt(array[3]);
+                                                $("#menu-dropdown").hide();
+                                                // var len = array[4].length;
+                                                // if (len > 12) {
+                                                //     var wid = len * 14 + 20;
+                                                //     $("#ztmc").width(wid + "px");
+                                                // }
+                                                ztView(array[4])
+                                                addTab("b800500", "待办事项", "/cw/biz/agency/showtodo.html");
+                                                earlyInfoProcess();// 预警信息查询
+                                            }
+                                        });
+
+                                    }
+                                }
+                            }, {
+                                text: "关&nbsp;&nbsp;闭",
+                                primary: false,
+                                dismissible: true
+                            }]
+                        });
+                    }
+                    else {
+                        $.adam.ajax({
+                            action: "net.hitina.biz.nk.common.commonUtil",
+                            method: "setSessionAccountBook",
+                            data: {
+                                accountBookId: accountId,
+                                code: array[1],
+                                businessDate: array[2]
+                            },
+                            success: function (data, code, message) {
+                                closeDialog();
+                                leftMenuChange(accountId);
+                                closeTabExt(array[3]);
+                                $("#menu-dropdown").hide();
+                                // var len = array[4].length;
+                                // if (len > 12) {
+                                //     var wid = len * 14 + 20;
+                                //     $("#ztmc").width(wid + "px");
+                                // }
+                                ztView(array[4]);
+                                if("b800"==menuCodeVal){
+                                    addTab("b800500", "待办事项", "/cw/biz/agency/showtodo.html");
+                                    earlyInfoProcess();// 预警信息查询
+                                }
+
+                            }
+                        });
+                    }
+
+                }
+            });
+        }
+        function setDefaultAccountBXBook(accountId) {
+            $.adam.ajax({
+                action: "net.hitina.biz.nk.common.commonUtil",
+                method: "setDefault",
+                data: {
+                    accountId: accountId
+                },
+                success: function (data) {
+
+                }
+            });
+        }
+
+        function openSelectAccount() {
+            var loginDate = "2026-05-06";
+
+            dialogHandler = $.showDialog({
+                url: "/cw/biz/select_account.html?code=" + menuCodeVal + "&loginDate=" + loginDate,
+                width: "750px",
+                height: "420px",
+                title: "账套选择",
+                buttons: [{
+                    text: "确&nbsp;&nbsp;定",
+                    primary: true,
+                    handler: function (cwindow) {
+                        var array = cwindow.getAccountBookValue();
+                        if (array != undefined) {
+                            if (array[0] == undefined || array[0] == "") {
+                                $.alert("请选择账套！");
+                                return false;
+                            }
+                            var accountId = array[0];
+                            $.adam.ajax({
+                                action: "net.hitina.biz.console.menu_resource",
+                                method: "setSessionAccountBook",
+                                data: {
+                                    accountBookId: accountId,
+                                    code: array[1],
+                                    businessDate: array[2]
+                                },
+                                success: function (data, code, message) {
+                                    closeDialog();
+                                    leftMenuChange(accountId);
+                                    closeTabExt(array[3]);
+                                    $("#menu-dropdown").hide();
+                                    ztView(array[4])
+                                }
+                            });
+
+                        }
+
+                    }
+                }, {
+                    text: "确定并设置为默认",
+                    primary: true,
+                    handler: function (cwindow) {
+                        var array = cwindow.getAccountBookValue();
+                        if (array != undefined) {
+                            if (array[0] == undefined || array[0] == "") {
+                                $.alert("请选择账套！");
+                                return false;
+                            }
+                            var accountId = array[0];
+                            $.adam.ajax({
+                                action: "net.hitina.biz.console.menu_resource",
+                                method: "setSessionAccountBook",
+                                data: {
+                                    accountBookId: accountId,
+                                    code: array[1],
+                                    businessDate: array[2]
+                                },
+                                success: function (data, code, message) {
+                                    closeDialog();
+                                    setDefaultAccountBook(accountId);
+                                    leftMenuChange(accountId);
+                                    closeTabExt(array[3]);
+                                    $("#menu-dropdown").hide();
+                                    ztView(array[4])
+                                    // var len = array[4].length;
+                                    // if (len > 12) {
+                                    //     var wid = 25 * 14 + 20;
+                                    //     $("#ztmc").width(wid + "px");
+                                    // }
+                                }
+                            });
+
+                        }
+                    }
+                }, {
+                    text: "关&nbsp;&nbsp;闭",
+                    primary: false,
+                    dismissible: true
+                }]
+            });
+        }
+
+        function setDefaultAccountBook(accountId) {
+            $.adam.ajax({
+                action: "net.hitina.biz.console.menu_resource",
+                method: "setDefault",
+                data: {
+                    code: menuCodeVal,
+                    accountId: accountId
+                },
+                success: function (data) {
+
+                }
+            });
+        }
+
+        function leftMenuChange(accountId) {
+
+            $.adam.ajax({
+                action: "net.hitina.biz.console.menu_resource",
+                method: "loadMenus",
+                data: {
+                    code: menuCodeVal,
+                    accountId: accountId,
+                    path: path
+                },
+                success: function (data) {
+                    var menus = data.menu;
+                    var dom = $('#xmenu')[0];
+                    ko.cleanNode(dom);
+                    ko.applyBindings(new ViewModel(menus), dom);
+                    $("li[name=treeauto]").click(function (e) {
+                        e.stopPropagation();
+                        $(this).siblings().children("ul").hide(500);
+                        $(this).children("ul").toggle(500);
+                    });
+                    $('li[name=treeauto]').each(function(){
+                        var k = $(this).find("li");
+                        if(k.length == 0){
+                            // $(this).find("i").removeClass("fa fa-caret-down");
+                            // $(this).find("i").addClass("fa fa-caret-right");
+                        }
+                        if ("b700"==menuCodeVal) {
+                            $(".main-sidebar-container").addClass("jj_menu_size");
+                            $(".treeview-menu").find("li").find("a").find("span").addClass("jj_menu_size");
+                        }else{
+                            $(".main-sidebar-container").removeClass("jj_menu_size");
+                            $(".treeview-menu").find("li").find("a").find("span").removeClass("jj_menu_size");
+                        }
+                    })
+                }
+            });
+        }
+
+        function isExistAccounts() {
+            var flag;
+            $.adam.ajax({
+                action: "net.hitina.biz.console.menu_resource",
+                method: "isExistAccounts",
+                sync: true,
+                data: {
+                    code: menuCodeVal
+                },
+                success: function (data) {
+                    if (data.num >= 1) flag = true; // modify by lihaiyang 20180607 当只有一个帐套可选择时菜单不显示
+                    else flag = false;
+                }
+            });
+            return flag;
+        }
+
+        function mousewheel(targetSelector) {
+
+            $(targetSelector).mousewheel(function (event, y) {
+                var target = $(targetSelector);
+                var viewH = target.height(),//可见高度
+                        contentH = target.get(0).scrollHeight,
+                        scrollTop = target.scrollTop();//滚动高度
+                if (scrollTop != (contentH - viewH)) {
+                    if (Math.abs(y) < 20) {
+                        y = y > 0 ? 20 : -20;
+                    }
+                    target.scrollTop(scrollTop - y);
+                }
+            });
+        }
+
+        //  mousewheel(".main-sidebar");
+        mousewheel(".tab-content");
+
+
+        $("body").on('expanded.pushMenu', function () {
+            $(".main-content").removeClass("main-content-collapsed").addClass("main-content-expanded");
+            $("#toggleId").removeClass("sidebar-toggle fa fa-caret-right").addClass("sidebar-toggle fa fa-caret-left");
+        });
+
+        $("body").on('collapsed.pushMenu', function () {
+            $(".main-content").removeClass("main-content-expanded").addClass("main-content-collapsed");
+            $("#toggleId").removeClass("sidebar-toggle fa fa-caret-left").addClass("sidebar-toggle fa fa-caret-right");
+        });
+        var READYTOPROCESS = false;
+        window.onbeforeunload = function closeWindow(e) {
+            //document.location="<%=request.getContextPath()%>/login.do?method=loginOut";
+            if (event.clientY < 0) {
+                $.adam.ajax({
+                    action: "net.hitina.biz.console.menu_resource",
+                    method: "logout",
+                    data: {
+                        code: menuCodeVal
+                    },
+                    success: function (data) {
+                    }
+                });
+            }
+
+        }
+    }
+    // add by lihaiyang 20191204 共通的showDialog方法，可以按照页面整个区域计算弹出的页面大小
+    var openers = {};
+    // 确认和关闭两个按钮使用
+    function showDialogOkAndClose(url, width, height, title, opener, openerName) {
+        var dialogHandler = $.showDialog({
+            url: "/cw/" + url,
+            width: width,
+            height: height,
+            title: title,
+            buttons: [{
+                text: "确&nbsp;&nbsp;认", primary: true, handler: function (contentWindow) {
+                    //contentWindow._parent = opener;
+                    openers[openerName].opener.doAction();
+                }
+            }, {text: "关&nbsp;&nbsp;闭", dismissible: true, handler: function (contentWindow) {
+                    openers[openerName].handler.close();
+                }}]
+        });
+        openers[openerName] = {
+            opener: opener,
+            handler: dialogHandler
+        };
+    }
+    // 只有关闭按钮使用
+    function  showDialogAloneClose(url, width, height, title, opener, openerName) {
+        var dialogHandler = $.showDialog({
+            url: "/cw/" + url,
+            width: width,
+            height: height,
+            title: title,
+            buttons: [
+                {text: "关&nbsp;&nbsp;闭", dismissible: true, handler: function (contentWindow) {
+                        openers[openerName].handler.close();
+                    }}]
+        });
+        openers[openerName] = {
+            opener: opener,
+            handler: dialogHandler
+        };
+    }
+    //update by y-ch 20191225 账套名称过长问题
+    function ztView(arr1){
+        var arr;
+        if(arr1.length==1){
+            arr=arr1[0];
+        }else{
+            arr=arr1;
+        }
+        var qbkd = document.getElementById("headermenu").clientWidth;//菜单栏全部长度
+        var menu_kd = qbkd  - 200 - 130;
+        var len = arr.length;
+        if(menu_kd>menuLength * 65){
+            var ztLength=menu_kd-menuLength * 65 + 150;
+            var nameLenght=len*14+20;
+            if(nameLenght<=ztLength){
+                $("#ztmc").width(nameLenght + "px");
+            }else{
+                if(parseInt(nameLenght/ztLength)==1){
+                    $("#ztmc").css("fontSize","13px");
+                    $("#ztmc").width(ztLength + "px");
+                }else if(parseInt(nameLenght/ztLength)>=2){
+                    $("#ztmc").css("fontSize","13px");
+                    document.getElementById("resourceName").innerHTML="..."+arr.substring(arr.length-(parseInt(ztLength/13)*2),arr.length);
+                    $("#ztmc").attr("title",arr);
+                    $("#ztmc").width(ztLength + "px");
+                }
+            }
+        }else{
+            $("#ztmc").css("fontSize","13px");
+            if(arr.length>25){
+                document.getElementById("resourceName").innerHTML="..."+arr.substring(arr.length-25,arr.length);
+            }
+            $("#ztmc").attr("title",arr);
+        }
+    }
+
+    function collapseAction(){
+        if($("#collapseButton").hasClass("glyphicon-chevron-left")){
+            $("#collapseButton").removeClass("glyphicon-chevron-left");
+            $("#collapseButton").addClass("glyphicon-chevron-right");
+            $("#toggleId").hide();
+            $(".navbar-custom-menu").css("padding-left","0px");
+            $("#left-sider").width("0px");
+            $("#headermenu").width($("#headermenu").width()+190);
+        }else{
+            $("#collapseButton").removeClass("glyphicon-chevron-right");
+            $("#collapseButton").addClass("glyphicon-chevron-left");
+            $("#left-sider").width("190px");
+            $(".navbar-custom-menu").css("padding-left","190px");
+            $("#toggleId").show();
+            $("#headermenu").width($("#headermenu").width()-190);
+        }
+    }
+
+    //保存成功!
+    function toastrSuccess(message){
+        if(null==message||message==''){
+            message="操作成功！";
+        }
+        toastr.success(message);
+    }
+    //告警内容提示
+    function toastrWarning(message){
+        toastr.warning(message);
+    }
+    //提示内容!
+    function toastrInfo(message){
+        toastr.info(message);
+    }
+    //操作失败!
+    function toastrError(message){
+        if(null==message||message==''){
+            message="操作失败！";
+        }
+        toastr.error(message);
+    }
+</script>
+
+
+<loading class="adam-ui adam-ui-loading" style="display: none;"><div class="adam-loading"></div><div class="adam-loading-progress"><h5>正在加载...</h5><div class="progress adam-progress"><div class="progress-bar progress-bar-striped active" style="width:100%"></div></div></div></loading></body></html>

@@ -8,10 +8,8 @@ const RULE_ENGINE_TIMEOUT_MS = Number(process.env.RULE_ENGINE_TIMEOUT_MS || 1200
 
 function getPythonCandidates() {
     const candidates = [];
-    const win7Portable = path.join(config.projectRoot, 'python-win7', 'python.exe');
     const bundledPython = path.join(config.ruleRuntimeRoot, 'python', 'python.exe');
     if (process.env.PYTHON_BIN) candidates.push({ command: process.env.PYTHON_BIN, args: [] });
-    if (process.platform === 'win32' && fs.existsSync(win7Portable)) candidates.push({ command: win7Portable, args: [] });
     if (fs.existsSync(bundledPython)) candidates.push({ command: bundledPython, args: [] });
     candidates.push({ command: 'python', args: [] }, { command: 'python3', args: [] }, { command: 'py', args: ['-3'] });
     return candidates;
@@ -43,10 +41,6 @@ function buildRuleContext(body = {}) {
         uploadResults: body.uploadResults || [],
         payments: body.payments || body.paymentInfoList || [],
         paymentInfoList: body.paymentInfoList || body.payments || [],
-        meetingData: body.meetingData || body.prefillData?.meetingData || prefillData.meetingData || {},
-        pageSnapshot: body.pageSnapshot || body.pageExtractData || prefillData.pageExtractData || {},
-        pageBasics: body.pageBasics || prefillData.pageBasics || {},
-        pageUrl: body.pageUrl || body.currentPageUrl || '',
         ruleFileName: body.ruleFileName || '',
         currentPageUrl: body.currentPageUrl || '',
     };

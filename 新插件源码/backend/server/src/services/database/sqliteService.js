@@ -11,8 +11,6 @@ const SQLITE_BRIDGE_MAX_BUFFER = Number(process.env.SQLITE_BRIDGE_MAX_BUFFER || 
 
 function pythonExePath() {
     if (process.env.PYTHON_BIN) return process.env.PYTHON_BIN;
-    const win7Portable = path.join(config.projectRoot, 'python-win7', 'python.exe');
-    if (process.platform === 'win32' && fs.existsSync(win7Portable)) return win7Portable;
     const bundled = path.join(config.ruleRuntimeRoot, 'python', process.platform === 'win32' ? 'python.exe' : 'python');
     return fs.existsSync(bundled) ? bundled : 'python';
 }

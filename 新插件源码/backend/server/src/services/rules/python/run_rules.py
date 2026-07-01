@@ -6,9 +6,6 @@ import traceback
 
 
 ROOT = pathlib.Path(__file__).resolve().parent
-ROOT_TEXT = str(ROOT)
-if ROOT_TEXT not in sys.path:
-    sys.path.insert(0, ROOT_TEXT)
 
 
 def load_json_stdin():
@@ -38,22 +35,17 @@ def normalize_rule_result(file_name, module, result):
         result = {}
     if isinstance(result, list):
         issues = result
-        skipped = False
         passed = len(issues) == 0
-        status = 'pass' if passed else 'warning'
         summary = '通过' if passed else f'发现 {len(issues)} 个问题'
     else:
         issues = result.get('issues') or []
-        skipped = bool(result.get('skipped')) or result.get('status') == 'skipped'
-        passed = bool(result.get('passed', len(issues) == 0)) and not skipped
+        passed = bool(result.get('passed', len(issues) == 0))
         summary = result.get('summary') or ('通过' if passed else f'发现 {len(issues)} 个问题')
-        status = result.get('status') or ('skipped' if skipped else ('pass' if passed else 'warning'))
     return {
         'id': meta.get('id') or file_name,
         'ruleId': meta.get('id') or file_name,
         'ruleName': meta.get('name') or file_name,
-        'status': status,
-        'skipped': skipped,
+        'status': 'pass' if passed else 'warning',
         'passed': passed,
         'issues': issues,
         'summary': summary,

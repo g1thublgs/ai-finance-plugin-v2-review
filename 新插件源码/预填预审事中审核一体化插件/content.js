@@ -657,33 +657,6 @@
         return Number.isFinite(n) ? n : 0;
     }
 
-    function readControlValue(doc, idOrName) {
-        const key = String(idOrName || '').trim();
-        if (!key) return '';
-        const selectors = [
-            `#${key}`,
-            `[id="${key}"]`,
-            `[name="${key}"]`,
-            `[name="JFZCSQ.${key}"]`,
-            `[columnname="${key}"]`,
-        ];
-        const element = selectors.map(selector => {
-            try { return doc.querySelector(selector); } catch (error) { return null; }
-        }).find(Boolean);
-        if (!element) return '';
-        const ownValue = (element.value ?? element.getAttribute?.('value') ?? '').toString().trim();
-        if (ownValue) return ownValue;
-        const ownText = (element.textContent || '').trim();
-        if (ownText) return ownText;
-        const inner = element.querySelector?.('input.adam-ui-showinput, input, textarea, select');
-        if (!inner) return '';
-        return (inner.value || inner.textContent || inner.getAttribute?.('value') || '').trim();
-    }
-
-    function readMeetingNumber(doc, idOrName) {
-        return normalizeNumberText(readControlValue(doc, idOrName));
-    }
-
     function buildRecordKey(rowData, index) {
         return [
             rowData.name || '',
@@ -808,51 +781,9 @@
                 payType: text('ZFFS_MC'),
                 amount: text('ZF_JE'),
                 cardAmount: text('BX_JE'),
-                cardConsumeTime: text('GWKHKSJ'),
                 expenseType: text('HWLX'),
             };
-        }).filter(item => item.payee || item.payType || item.amount || item.cardAmount || item.cardConsumeTime || item.expenseType);
-    }
-
-    function extractMeetingDetail() {
-        const doc = getFinanceDocument();
-        const basics = extractPageBasics();
-        const meetingFieldIds = ['HYTS', 'HYRS', 'HSF', 'ZSF', 'CDF', 'QTFY', 'SQ_JE', 'PJZS', 'HYPXBH'];
-        const presentMeetingFields = meetingFieldIds.filter(id => doc.getElementById(id) || doc.querySelector(`[name="JFZCSQ.${id}"]`));
-        const bodyText = doc.body?.textContent || '';
-        const meetingData = {
-            days: readMeetingNumber(doc, 'HYTS'),
-            peopleCount: readMeetingNumber(doc, 'HYRS'),
-            mealAmount: readMeetingNumber(doc, 'HSF'),
-            accommodationAmount: readMeetingNumber(doc, 'ZSF'),
-            venueAmount: readMeetingNumber(doc, 'CDF'),
-            otherAmount: readMeetingNumber(doc, 'QTFY'),
-            totalAmount: readMeetingNumber(doc, 'SQ_JE'),
-            paperAttachmentCount: readMeetingNumber(doc, 'PJZS'),
-            meetingPlanNo: readControlValue(doc, 'HYPXBH'),
-            reimbursementUnitName: readControlValue(doc, 'SSBM_MC') || readControlValue(doc, 'SQ_SSBM') || basics.unitName || '',
-            departmentName: readControlValue(doc, 'SSBM_MC') || readControlValue(doc, 'SQ_SSBM') || basics.departmentName || '',
-        };
-        const payments = readPaymentRows(doc).map(row => ({
-            rowindex: row.rowindex,
-            payeeName: row.payee,
-            payType: row.payType,
-            paymentAmount: normalizeNumberText(row.amount),
-            cardAmount: normalizeNumberText(row.cardAmount),
-            cardConsumeTime: row.cardConsumeTime || '',
-            expenseType: row.expenseType,
-        }));
-        return {
-            scenarioType: 'meeting',
-            hasMeetingFields: presentMeetingFields.length > 0 || /会议费|会议经费/.test(bodyText),
-            presentMeetingFields,
-            pageTextHint: /会议费|会议经费/.test(bodyText) ? '会议费' : '',
-            meetingData,
-            attachments: readAttachmentRows(doc),
-            payments,
-            pageBasics: basics,
-            pageUrl: basics.pageUrl || location.href,
-        };
+        }).filter(item => item.payee || item.payType || item.amount || item.cardAmount || item.expenseType);
     }
 
     function extractCurrentPageAttachments() {
@@ -882,8 +813,6 @@
             yhzh: '',
             zfje: normalizeNumberText(row.amount || row.cardAmount),
             rawZfje: row.amount || row.cardAmount || '',
-            bxje: normalizeNumberText(row.cardAmount),
-            gwkhksj: row.cardConsumeTime || '',
             payType: row.payType,
             expenseType: row.expenseType,
         }));
@@ -1492,11 +1421,6 @@
         if (request.action === 'extractTravelDetail') {
             const travelDetail = extractTravelDetail();
             sendResponse({ success: true, data: travelDetail, ...travelDetail });
-            return true;
-        }
-        if (request.action === 'extractMeetingDetail') {
-            const meetingDetail = extractMeetingDetail();
-            sendResponse({ success: true, data: meetingDetail, ...meetingDetail });
             return true;
         }
         if (request.action === 'fillTravelPrefillRecords') {

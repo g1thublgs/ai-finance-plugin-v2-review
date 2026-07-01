@@ -84,18 +84,6 @@ function normalizedDocType(value) {
         meetingApproval: 'meetingApproval',
         meeting_approval: 'meetingApproval',
         会议审批单: 'meetingApproval',
-        meetingPlan: 'meetingPlan',
-        meeting_plan: 'meetingPlan',
-        会议计划: 'meetingPlan',
-        会议计划表: 'meetingPlan',
-        会议计划审批表: 'meetingPlan',
-        feeSettlement: 'feeSettlement',
-        fee_settlement: 'feeSettlement',
-        会议结算单: 'feeSettlement',
-        费用明细: 'feeSettlement',
-        accommodationList: 'accommodationList',
-        accommodation_list: 'accommodationList',
-        住宿清单: 'accommodationList',
         trainingNotice: 'trainingNotice',
         training_notice: 'trainingNotice',
         培训通知: 'trainingNotice',
@@ -118,7 +106,7 @@ function inferScenarioFromOcr(ocrItems = []) {
     const types = new Set((ocrItems || [])
         .map(item => normalizedDocType(item && (item.recognizeType || item.docType || item.type)))
         .filter(Boolean));
-    if ([...types].some(type => ['meetingNotice', 'meetingApproval', 'meetingPlan', 'attendanceList', 'feeSettlement'].includes(type))) return meeting;
+    if ([...types].some(type => ['meetingNotice', 'meetingApproval'].includes(type))) return meeting;
     if ([...types].some(type => ['trainingNotice', 'trainingApproval'].includes(type))) return training;
     if ([...types].some(type => ['receptionLetter', 'receptionList', 'menu'].includes(type))) return reception;
     if ([...types].some(type => ['tripDetailList', 'guangzhouTaxiInvoice', 'paymentRecord', 'normalInvoice'].includes(type))) return other;

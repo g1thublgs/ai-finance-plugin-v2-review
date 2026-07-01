@@ -126,7 +126,9 @@ def has_doc_type(data, doc_types):
         'meetingPlan': 'hasMeetingPlan',
         'attendanceList': 'hasAttendanceList',
         'meetingSettlement': 'hasSettlement',
+        'accommodationList': 'hasAccommodationList',
         'normalInvoice': 'hasInvoice',
+        'paymentProof': 'hasPaymentProof',
     }
     return any(s.get(bool_fields.get(item, '')) for item in wanted)
 
@@ -211,6 +213,12 @@ def meeting_category(data):
     s = summary(data)
     explicit = to_text(s.get('meetingCategory') or s.get('category'))
     if explicit:
+        if '二类' in explicit:
+            return '二类'
+        if '三类' in explicit:
+            return '三类'
+        if '四类' in explicit:
+            return '四类'
         return explicit
     page = s.get('pageFields') or {}
     unit = normalize_text(page.get('reimbursementUnitName') or get_nested(data, ['unitName', 'departmentName'], ''))

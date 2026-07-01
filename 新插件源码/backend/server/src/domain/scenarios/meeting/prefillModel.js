@@ -20,6 +20,10 @@ function parseNumber(value, defaultValue = 0) {
     return Number.isFinite(n) ? n : defaultValue;
 }
 
+function hasValue(value) {
+    return value !== undefined && value !== null && String(value).trim() !== '';
+}
+
 function parseDate(value) {
     const text = cleanText(value);
     if (!text) return '';
@@ -126,14 +130,22 @@ function normalizePageFields(context = {}) {
         reason: cleanText(firstValue(pageFields, ['reason', 'SQ_SY'])),
         reimbursementUnitName: cleanText(firstValue(pageFields, ['reimbursementUnitName', 'unitName', '报销单位名称'])),
         meetingName: cleanText(firstValue(pageFields, ['meetingName', 'SQ_MC'])),
+        meetingCategory: cleanText(firstValue(pageFields, ['meetingCategory', 'HYLB'])),
+        meetingPlanNo: cleanText(firstValue(pageFields, ['meetingPlanNo', 'HYPXBH'])),
+        approvalNo: cleanText(firstValue(pageFields, ['approvalNo', 'approvalName', 'HYJYBH'])),
         meetingDays: parseNumber(firstValue(pageFields, ['meetingDays', 'HYTS']), 0),
         attendeeCount: parseNumber(firstValue(pageFields, ['attendeeCount', 'HYRS']), 0),
+        staffCount: parseNumber(firstValue(pageFields, ['staffCount', 'GZRYRS']), 0),
         accommodationAmount: parseAmount(firstValue(pageFields, ['accommodationAmount', 'ZSF']), 0),
         mealAmount: parseAmount(firstValue(pageFields, ['mealAmount', 'HSF']), 0),
         venueRentAmount: parseAmount(firstValue(pageFields, ['venueRentAmount', 'CDF']), 0),
+        materialAmount: parseAmount(firstValue(pageFields, ['materialAmount', 'ZLF']), 0),
+        transportAmount: parseAmount(firstValue(pageFields, ['transportAmount', 'JTF']), 0),
         otherAmount: parseAmount(firstValue(pageFields, ['otherAmount', 'QTFY']), 0),
         applyAmount: parseAmount(firstValue(pageFields, ['applyAmount', 'SQ_JE', 'pageAmount']), 0),
+        paymentAmount: parseAmount(firstValue(pageFields, ['paymentAmount', 'ZFJE', 'ZFJEHJ']), 0),
         totalAmount: parseAmount(firstValue(pageFields, ['totalAmount', 'SQ_JE', 'pageAmount']), 0),
+        attachmentCount: parseNumber(firstValue(pageFields, ['attachmentCount', 'paperAttachmentCount', 'PJZS']), 0),
         remark: cleanText(firstValue(pageFields, ['remark', 'BZ'])),
         raw: pageFields,
     };
@@ -196,11 +208,30 @@ async function buildPrefill({ ocrItems = [], context = {} }) {
     const meetingLocation = cleanText(chooseCandidate([
         ...candidates(['location', 'meetingLocation', '地点']),
     ], 'meetingLocation', evidence, warnings));
-    const attendeeCount = page.attendeeCount || parseNumber(chooseCandidate([
+    const meetingCategory = cleanText(chooseCandidate([
+        { value: page.meetingCategory, source: 'page' },
+        ...candidates(['meetingCategory', 'category']),
+    ], 'meetingCategory', evidence, warnings));
+    const meetingPlanNo = cleanText(chooseCandidate([
+        { value: page.meetingPlanNo, source: 'page' },
+        ...candidates(['meetingPlanNo', 'planNo']),
+    ], 'meetingPlanNo', evidence, warnings));
+    const approvalNo = cleanText(chooseCandidate([
+        { value: page.approvalNo, source: 'page' },
+        ...candidates(['approvalNo', 'approvalTitle']),
+    ], 'approvalNo', evidence, warnings));
+    const attendeeCount = parseNumber(chooseCandidate([
+        { value: hasValue(page.raw?.attendeeCount) || hasValue(page.raw?.HYRS) ? page.attendeeCount : '', source: 'page' },
         ...candidates(['attendeeCount', 'participantCount', 'personCount', 'count']),
     ], 'attendeeCount', evidence, warnings), 0);
-    const staffCount = parseNumber(chooseCandidate(candidates(['staffCount']), 'staffCount', evidence, warnings), 0);
-    const meetingDays = page.meetingDays || parseNumber(chooseCandidate(candidates(['meetingDays', 'days']), 'meetingDays', evidence, warnings), 0);
+    const staffCount = parseNumber(chooseCandidate([
+        { value: hasValue(page.raw?.staffCount) || hasValue(page.raw?.GZRYRS) ? page.staffCount : '', source: 'page' },
+        ...candidates(['staffCount']),
+    ], 'staffCount', evidence, warnings), 0);
+    const meetingDays = parseNumber(chooseCandidate([
+        { value: hasValue(page.raw?.meetingDays) || hasValue(page.raw?.HYTS) ? page.meetingDays : '', source: 'page' },
+        ...candidates(['meetingDays', 'days', 'plannedDays', 'approvedDays']),
+    ], 'meetingDays', evidence, warnings), 0);
 
     const invoices = [];
     const seenInvoices = new Set();
@@ -215,21 +246,29 @@ async function buildPrefill({ ocrItems = [], context = {} }) {
         invoices.push(item);
     });
 
-    const sumItemAmounts = (fieldKeys, detailKeys = []) => repairedItems.reduce((sum, item) => {
+    const sumItemAmounts = (fieldKeys, detailKeys = [], allowedTypes = []) => repairedItems.reduce((sum, item) => {
+        if (allowedTypes.length && !allowedTypes.includes(docType(item))) return sum;
         const direct = parseAmount(firstValue(item, fieldKeys), 0);
         const detail = detailKeys.length ? amountFromDetails(item, detailKeys) : 0;
         return sum + direct + detail;
     }, 0);
 
-    const accommodationAmount = page.accommodationAmount || sumItemAmounts(['accommodationAmount', '住宿费'], ['住宿', '房费']);
-    const mealAmount = page.mealAmount || sumItemAmounts(['mealAmount', '伙食费', '餐费预算'], ['餐', '伙食']);
-    const venueRentAmount = page.venueRentAmount || sumItemAmounts(['venueRentAmount', 'venueAmount', '场地租金', '会场费'], ['场地', '会场', '会议室']);
-    const materialAmount = sumItemAmounts(['materialAmount', '资料费'], ['资料']);
-    const transportAmount = sumItemAmounts(['transportAmount', '交通费'], ['交通']);
-    const otherAmount = page.otherAmount || sumItemAmounts(['otherAmount', '其他费用'], ['其他']);
+    const chooseAmount = (field, pageValue, pageKeys, ocrKeys, detailKeys = [], allowedTypes = []) => {
+        const ocrValue = sumItemAmounts(ocrKeys, detailKeys, allowedTypes);
+        return parseAmount(chooseCandidate([
+            { value: pageKeys.some(key => hasValue(page.raw?.[key])) ? pageValue : '', source: 'page' },
+            { value: ocrValue > 0 ? ocrValue : '', source: 'ocr' },
+        ], field, evidence, warnings), 0);
+    };
+    const accommodationAmount = chooseAmount('accommodationAmount', page.accommodationAmount, ['accommodationAmount', 'ZSF'], ['accommodationAmount', '住宿费', 'amount', 'totalAmount'], ['住宿', '房费'], ['meetingSettlement', 'accommodationList']);
+    const mealAmount = chooseAmount('mealAmount', page.mealAmount, ['mealAmount', 'HSF'], ['mealAmount', '伙食费', '餐费预算'], ['餐', '伙食'], ['meetingSettlement']);
+    const venueRentAmount = chooseAmount('venueRentAmount', page.venueRentAmount, ['venueRentAmount', 'CDF'], ['venueRentAmount', 'venueAmount', '场地租金', '会场费'], ['场地', '会场', '会议室'], ['meetingSettlement']);
+    const materialAmount = chooseAmount('materialAmount', page.materialAmount, ['materialAmount', 'ZLF'], ['materialAmount', '资料费'], ['资料'], ['meetingSettlement']);
+    const transportAmount = chooseAmount('transportAmount', page.transportAmount, ['transportAmount', 'JTF'], ['transportAmount', '交通费'], ['交通'], ['meetingSettlement']);
+    const otherAmount = chooseAmount('otherAmount', page.otherAmount, ['otherAmount', 'QTFY'], ['otherAmount', '其他费用'], ['其他'], ['meetingSettlement']);
     const invoiceAmount = invoices.reduce((sum, item) => sum + parseAmount(firstValue(item, ['totalAmount', 'invoiceAmount', 'amount', '价税合计', '合计金额']), 0), 0);
-    const paymentAmount = sumItemAmounts(['paymentAmount', 'payAmount', '支付金额']);
-    const applyAmount = page.applyAmount || parseAmount(context.pageAmount, 0);
+    const paymentAmount = chooseAmount('paymentAmount', page.paymentAmount, ['paymentAmount', 'ZFJE', 'ZFJEHJ'], ['paymentAmount', 'payAmount', '支付金额'], [], ['paymentProof']);
+    const applyAmount = chooseAmount('applyAmount', page.applyAmount || parseAmount(context.pageAmount, 0), ['applyAmount', 'SQ_JE', 'pageAmount'], ['approvedAmount'], [], ['meetingApproval']);
     const totalAmount = page.totalAmount || parseAmount(firstValue({ invoiceAmount }, ['invoiceAmount']), 0) || (
         accommodationAmount + mealAmount + venueRentAmount + materialAmount + transportAmount + otherAmount
     );
@@ -240,7 +279,9 @@ async function buildPrefill({ ocrItems = [], context = {} }) {
         ['hasMeetingPlan', hasDoc(repairedItems, ['meetingPlan'])],
         ['hasAttendanceList', hasDoc(repairedItems, ['attendanceList'])],
         ['hasSettlement', hasDoc(repairedItems, ['meetingSettlement'])],
+        ['hasAccommodationList', hasDoc(repairedItems, ['accommodationList'])],
         ['hasInvoice', invoices.length > 0],
+        ['hasPaymentProof', hasDoc(repairedItems, ['paymentProof'])],
     ].forEach(([field, value]) => addEvidence(evidence, field, { value, source: 'ocrRecognizeType' }));
 
     const summary = {
@@ -250,6 +291,9 @@ async function buildPrefill({ ocrItems = [], context = {} }) {
         meetingDate,
         meetingDays,
         meetingLocation,
+        meetingCategory,
+        meetingPlanNo,
+        approvalNo,
         attendeeCount,
         staffCount,
         totalPeopleCount: attendeeCount + staffCount,
@@ -258,7 +302,9 @@ async function buildPrefill({ ocrItems = [], context = {} }) {
         hasMeetingPlan: hasDoc(repairedItems, ['meetingPlan']),
         hasAttendanceList: hasDoc(repairedItems, ['attendanceList']),
         hasSettlement: hasDoc(repairedItems, ['meetingSettlement']),
+        hasAccommodationList: hasDoc(repairedItems, ['accommodationList']),
         hasInvoice: invoices.length > 0,
+        hasPaymentProof: hasDoc(repairedItems, ['paymentProof']),
         accommodationAmount,
         mealAmount,
         venueRentAmount,
@@ -270,6 +316,7 @@ async function buildPrefill({ ocrItems = [], context = {} }) {
         applyAmount,
         totalAmount,
         totalAll: totalAmount,
+        attachmentCount: page.attachmentCount || uploadResults.length || repairedItems.length,
         sourceDocumentCount: repairedItems.length,
         recordCount: records.length,
         pageFields: page,

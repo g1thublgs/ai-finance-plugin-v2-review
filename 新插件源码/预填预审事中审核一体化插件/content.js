@@ -769,8 +769,10 @@
             applyAmount: amount('SQ_JE'),
             totalAmount: amount('SQ_JE'),
             paperAttachmentCount: normalizeNumberText(value('PJZS')),
+            attachmentCount: normalizeNumberText(value('PJZS')),
             meetingPlanNo: value('HYPXBH'),
             approvalName: value('HYJYBH'),
+            approvalNo: value('HYJYBH'),
             remark: value('BZ'),
             raw: {
                 SQ_MC: value('SQ_MC'),

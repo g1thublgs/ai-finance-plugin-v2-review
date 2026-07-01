@@ -1469,17 +1469,23 @@ function handleOcrFileClick(event) {
 function isInvoiceOcrItem(item) {
     const type = normalizeRecognizeType(item.recognizeType || item.docType || item.type);
     const text = safeText(item);
+    const isMeetingScenario = getSelectedScenarioType() === 'meeting' || preAuditData?.expenseType === 'meeting';
     if (['guangzhouTaxiInvoice', 'tripDetailList', 'paymentRecord'].includes(type)) return false;
-    if (/trainInvoice|planeInvoice|travelRequest|accommodationList/i.test(type)) return false;
-    if (/火车票|飞机票|行程单|审批单|住宿清单/.test(text)) return false;
+    if (/trainInvoice|planeInvoice|travelRequest/i.test(type)) return false;
+    if (!isMeetingScenario && /accommodationList/i.test(type)) return false;
+    if (/火车票|飞机票|行程单|审批单/.test(text)) return false;
+    if (!isMeetingScenario && /住宿清单/.test(text)) return false;
     return type === 'normalInvoice' || /发票|电子发票|增值税|数电票|专票|普票/.test(text);
 }
 
 function isTravelOcrItem(item) {
     const type = safeText(item.recognizeType || item.docType || item.type);
     const text = safeText(item);
-    return /travelRequest|TravelRequest|trainInvoice|planeInvoice|accommodationList/i.test(type)
-        || /出差|差旅|火车票|飞机票|行程单|住宿清单|旅客|航班|车次/.test(text);
+    const isMeetingScenario = getSelectedScenarioType() === 'meeting' || preAuditData?.expenseType === 'meeting';
+    return /travelRequest|TravelRequest|trainInvoice|planeInvoice/i.test(type)
+        || (!isMeetingScenario && /accommodationList/i.test(type))
+        || /出差|差旅|火车票|飞机票|行程单|旅客|航班|车次/.test(text)
+        || (!isMeetingScenario && /住宿清单/.test(text));
 }
 
 function inferExpenseType(ocrItems) {

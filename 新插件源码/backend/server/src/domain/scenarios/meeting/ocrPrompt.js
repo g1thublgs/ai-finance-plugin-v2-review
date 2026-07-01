@@ -26,22 +26,22 @@ module.exports = {
 8. 对识别不确定的材料，recognizeType 使用 other，并保留 rawText 和可能候选字段。
 
 会议通知模板：
-{"recognizeType":"meetingNotice","meetingName":"","startDate":"","endDate":"","meetingDate":"","startPeriod":"","endPeriod":"","meetingDays":0,"location":"","organizer":"","attendeeScope":"","attendeeCount":0,"staffCount":0,"agenda":[],"rawText":""}
+{"recognizeType":"meetingNotice","meetingName":"","startDate":"","endDate":"","meetingDate":"","startPeriod":"","endPeriod":"","meetingDays":0,"meetingLocation":"","location":"","organizer":"","attendeeScope":"","attendeeCount":0,"staffCount":0,"agenda":[],"rawText":""}
 
 会议审批/请示/审批单模板：
-{"recognizeType":"meetingApproval","meetingName":"","approvalDate":"","startDate":"","endDate":"","location":"","approvalUnit":"","budgetAmount":"","approvedAmount":"","attendeeCount":0,"staffCount":0,"rawText":""}
+{"recognizeType":"meetingApproval","meetingName":"","approvalTitle":"","approvalDate":"","approvedAmount":"","approvedPeopleCount":0,"approvedDays":0,"approvalNo":"","startDate":"","endDate":"","meetingLocation":"","location":"","approvalUnit":"","budgetAmount":"","attendeeCount":0,"staffCount":0,"rawText":""}
 
 年度会议计划或会议计划表模板：
-{"recognizeType":"meetingPlan","meetingName":"","planYear":"","department":"","plannedTime":"","location":"","attendeeCount":0,"staffCount":0,"mealBudget":"","accommodationBudget":"","otherBudget":"","totalBudget":"","rawText":""}
+{"recognizeType":"meetingPlan","planYear":"","meetingName":"","meetingCategory":"","plannedPeopleCount":0,"plannedDays":0,"planNo":"","department":"","plannedTime":"","meetingLocation":"","location":"","attendeeCount":0,"staffCount":0,"mealBudget":"","accommodationBudget":"","otherBudget":"","totalBudget":"","rawText":""}
 
 签到表/参会人员名单模板：
-{"recognizeType":"attendanceList","meetingName":"","names":[],"attendees":[{"name":"","unit":"","role":""}],"unit":"","count":0,"rawText":""}
+{"recognizeType":"attendanceList","meetingName":"","names":[],"units":[],"attendees":[{"name":"","unit":"","role":""}],"unit":"","count":0,"signDate":"","rawText":""}
 
 会议结算单/费用明细表模板：
-{"recognizeType":"meetingSettlement","meetingName":"","startDate":"","endDate":"","meetingDays":0,"attendeeCount":0,"staffCount":0,"accommodationAmount":"","mealAmount":"","venueRentAmount":"","materialAmount":"","transportAmount":"","otherAmount":"","totalAmount":"","details":[{"name":"","quantity":"","unitPrice":"","amount":"","remark":""}],"rawText":""}
+{"recognizeType":"meetingSettlement","meetingName":"","settlementDate":"","startDate":"","endDate":"","meetingDays":0,"attendeeCount":0,"staffCount":0,"accommodationAmount":"","mealAmount":"","venueRentAmount":"","materialAmount":"","transportAmount":"","otherAmount":"","totalAmount":"","itemsDetail":[{"name":"","quantity":"","unitPrice":"","amount":"","remark":""}],"details":[{"name":"","quantity":"","unitPrice":"","amount":"","remark":""}],"rawText":""}
 
 住宿清单/住宿明细模板：
-{"recognizeType":"accommodationList","meetingName":"","hotelName":"","startDate":"","endDate":"","roomCount":0,"suiteCount":0,"standardRoomCount":0,"guestCount":0,"totalAmount":"","details":[{"roomType":"","roomCount":0,"days":0,"unitPrice":"","amount":"","guestName":""}],"rawText":""}
+{"recognizeType":"accommodationList","meetingName":"","hotelName":"","guestNames":[],"roomTypes":[],"roomCount":0,"startDate":"","endDate":"","days":0,"amount":"","hasSuite":false,"suiteCount":0,"standardRoomCount":0,"guestCount":0,"totalAmount":"","details":[{"roomType":"","roomCount":0,"days":0,"unitPrice":"","amount":"","guestName":""}],"rawText":""}
 
 通用发票模板：
 {"recognizeType":"normalInvoice","invoiceNumber":"","invoiceCode":"","issueDate":"","payerName":"","sellerName":"","totalAmount":"","taxAmount":"","itemsDetail":[{"name":"","specification":"","unit":"","quantity":"","amount":"","taxAmount":""}],"rawText":""}

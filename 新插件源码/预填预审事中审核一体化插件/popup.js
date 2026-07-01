@@ -327,6 +327,11 @@ async function startUploadAndAudit() {
                 preAuditData = { ...buildOtherExpensePrefillData(ocrItems, successful), caseId: currentCaseId, dataSource: 'upload' };
                 await persistCaseSnapshot(preAuditData, { scenarioType: 'other', source: 'prefill-preaudit-extension' });
                 showStatus('已生成其他事项报销预填数据，请核对后再一键预填。', 'success');
+            } else if (expenseType === 'meeting') {
+                showStatus('会议费材料识别完成，正在调用会议费归集和规则审核...', 'info');
+                preAuditData = await buildMeetingPrefillAndAuditData({ successfulUploads: successful, ocrItems, source: 'prefill-preaudit-extension' });
+                preAuditData.dataSource = 'upload';
+                showStatus('会议费OCR识别、预填归集和规则审核完成，请核对命中指标。', 'success');
             } else {
                 preAuditData = { ...buildReservedScenarioPrefillData(expenseType, ocrItems, successful), caseId: currentCaseId, dataSource: 'upload' };
                 await persistCaseSnapshot(preAuditData, { scenarioType: expenseType, source: 'prefill-preaudit-extension' });
@@ -372,6 +377,13 @@ async function extractCurrentPageAndAudit() {
         const ocrItems = collectOcrItemsWithSource(successful);
         if (pageSnapshot.scenarioType === 'travel') {
             preAuditData = await buildPageTravelAuditData(pageSnapshot, successful, ocrItems);
+        } else if (pageSnapshot.scenarioType === 'meeting') {
+            preAuditData = await buildMeetingPrefillAndAuditData({
+                successfulUploads: successful,
+                ocrItems,
+                pageSnapshot,
+                source: 'page-extract-audit-extension',
+            });
         } else {
             preAuditData = await buildPageOtherAuditData(pageSnapshot, successful, ocrItems);
         }
@@ -394,17 +406,24 @@ async function extractCurrentPageSnapshot() {
     const amountRes = await sendMessageToActiveTab({ action: 'getTotalAmount' });
     const paymentRes = await sendMessageToActiveTab({ action: 'getPaymentInfo' });
     const travelRes = await sendMessageToActiveTab({ action: 'extractTravelDetail' });
+    const meetingRes = await sendMessageToActiveTab({ action: 'extractMeetingDetail' });
     const travelDetail = travelRes?.data || travelRes || {};
+    const meetingDetail = meetingRes?.data || meetingRes || {};
     const subjects = subjectRes?.subjects || [];
+    const selectedScenario = getSelectedScenarioType();
     const isTravel = subjects.some(subject => String(subject || '').includes('7101010209'))
         || (Array.isArray(travelDetail.personal) && travelDetail.personal.length > 0);
+    const isMeeting = selectedScenario === 'meeting'
+        || /会议/.test([basicsRes?.data?.pageTitle, basicsRes?.data?.documentTitle, meetingDetail.title, meetingDetail.reason].filter(Boolean).join(' '))
+        || Boolean(meetingDetail.meetingDays || meetingDetail.attendeeCount || meetingDetail.mealAmount || meetingDetail.accommodationAmount || meetingDetail.venueRentAmount);
     return {
-        scenarioType: isTravel ? 'travel' : 'other',
+        scenarioType: isTravel ? 'travel' : (isMeeting ? 'meeting' : 'other'),
         subjects,
         attachments: attachmentRes?.attachments || [],
         pageAmount: amountRes?.totalAmount ?? null,
         payments: paymentRes?.payments || [],
         travelData: travelDetail || {},
+        meetingData: meetingDetail || {},
         pageBasics: basicsRes?.data || {},
         pageUrl: basicsRes?.data?.pageUrl || '',
     };
@@ -606,6 +625,71 @@ async function buildPageTravelAuditData(pageSnapshot, successfulUploads, ocrItem
         uploadResults: successfulUploads,
         auditResult: payload.auditResult || payload.data || {},
         pageExtractData: pageSnapshot,
+    };
+}
+
+async function buildMeetingPrefillAndAuditData({ successfulUploads = [], ocrItems = [], pageSnapshot = null, source = 'prefill-preaudit-extension' } = {}) {
+    const pageFields = pageSnapshot?.meetingData || {};
+    const pageBasics = pageSnapshot?.pageBasics || {};
+    const pageAmount = numberValue(pageSnapshot?.pageAmount);
+    const prefillResponse = await fetch(`${BACKEND_BASE_URL}/api/plugin/prefill`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            caseId: currentCaseId,
+            scenarioType: 'meeting',
+            ocrItems,
+            uploadResults: successfulUploads,
+            attachments: buildAuditAttachments(successfulUploads),
+            pageFields: {
+                ...pageFields,
+                pageAmount,
+                reimbursementUnitName: pageBasics.unitName || pageFields.reimbursementUnitName || '',
+                applicantName: pageBasics.applicantName || pageFields.applicantName || '',
+                departmentName: pageBasics.departmentName || pageFields.departmentName || '',
+            },
+            payments: pageSnapshot?.payments || [],
+            pageAmount,
+            currentPageUrl: pageSnapshot?.pageUrl || '',
+            source,
+        }),
+    });
+    const prefillPayload = await prefillResponse.json();
+    if (!prefillResponse.ok || !prefillPayload.success) throw new Error(prefillPayload.error || '会议费预填归集失败');
+    const prefill = prefillPayload.data || {};
+    const auditResponse = await fetch(`${BACKEND_BASE_URL}/api/plugin/audit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            caseId: prefillPayload.caseId || currentCaseId,
+            scenarioType: 'meeting',
+            prefillData: prefill,
+            ocrItems,
+            uploadResults: successfulUploads,
+            attachments: buildAuditAttachments(successfulUploads),
+            payments: pageSnapshot?.payments || [],
+            pageAmount,
+            currentPageUrl: pageSnapshot?.pageUrl || '',
+            source,
+        }),
+    });
+    const auditPayload = await auditResponse.json();
+    if (!auditResponse.ok || !auditPayload.success) throw new Error(auditPayload.error || '会议费指标审核失败');
+    return {
+        ...prefill,
+        caseId: auditPayload.caseId || prefillPayload.caseId || currentCaseId,
+        scenarioType: 'meeting',
+        expenseType: 'meeting',
+        sourceStats: {
+            ...(prefill.sourceStats || {}),
+            ocrItemCount: ocrItems.length,
+            uploadCount: successfulUploads.length,
+            pageAttachmentCount: (pageSnapshot?.attachments || []).length,
+        },
+        ocrItems,
+        uploadResults: successfulUploads,
+        auditResult: auditPayload.auditResult || auditPayload.data || {},
+        pageExtractData: pageSnapshot || null,
     };
 }
 
@@ -2468,13 +2552,21 @@ function renderSummary() {
     $('#sourceStats').textContent = stats
         ? (preAuditData?.expenseType === 'other'
             ? `OCR项 ${stats.ocrItemCount || 0}，发票 ${stats.invoiceCount || 0}${stats.duplicateInvoiceCount ? `，重复 ${stats.duplicateInvoiceCount}` : ''}，附件 ${stats.uploadCount || selectedFiles.length || 0}`
-            : `OCR项 ${stats.ocrItemCount || 0}，审批单 ${stats.travelRequestCount || 0}，票据 ${stats.ticketCount || stats.invoiceCount || 0}`)
+            : (preAuditData?.expenseType === 'meeting'
+                ? `OCR项 ${stats.ocrItemCount || 0}，发票 ${stats.invoiceCount || 0}，附件 ${stats.uploadCount || selectedFiles.length || 0}`
+                : `OCR项 ${stats.ocrItemCount || 0}，审批单 ${stats.travelRequestCount || 0}，票据 ${stats.ticketCount || stats.invoiceCount || 0}`))
         : '';
     if (!summary) {
         container.innerHTML = '<div class="empty">等待 OCR 返回数据</div>';
         return;
     }
     if (isPageAuditMode()) {
+        if (preAuditData?.expenseType === 'meeting') {
+            const auditResult = preAuditData?.auditResult || {};
+            const issues = auditResult.issues || [];
+            container.innerHTML = renderMeetingSummaryMetrics(summary, issues);
+            return;
+        }
         if (preAuditData?.expenseType === 'other') {
             container.innerHTML = renderOtherAmountComparison();
             return;
@@ -2522,6 +2614,10 @@ function renderSummary() {
         `;
         return;
     }
+    if (preAuditData?.expenseType === 'meeting') {
+        container.innerHTML = renderMeetingSummaryMetrics(summary, preAuditData?.auditResult?.issues || []);
+        return;
+    }
     container.innerHTML = `
         <div class="metric-grid">
             ${metric('预填记录', summary.recordCount || 0)}
@@ -2531,6 +2627,21 @@ function renderSummary() {
             ${metric('伙食补助费', money(summary.mealAmountTotal))}
             ${metric('市内交通费', money(summary.localTransportAmountTotal))}
             ${metric('合计金额', money(summary.totalAll))}
+        </div>
+    `;
+}
+
+function renderMeetingSummaryMetrics(summary = {}, issues = []) {
+    return `
+        <div class="metric-grid">
+            ${metric('会议名称', summary.meetingName || '-')}
+            ${metric('会议时间', [summary.startDate, summary.endDate].filter(Boolean).join(' 至 ') || summary.meetingDate || '-')}
+            ${metric('会议地点', summary.meetingLocation || '-')}
+            ${metric('会议天数', summary.meetingDays || 0)}
+            ${metric('参会人数', summary.attendeeCount || 0)}
+            ${metric('发票金额', `${money(summary.invoiceAmount || 0)} 元`)}
+            ${metric('金额合计', `${money(summary.totalAmount || summary.totalAll || 0)} 元`)}
+            ${metric('指标提示', issues.length)}
         </div>
     `;
 }
@@ -3291,7 +3402,11 @@ function renderRecords() {
     if (isPageAuditMode()) {
         container.innerHTML = preAuditData?.expenseType === 'travel'
             ? renderTravelAuditRecords(records)
-            : renderOtherAuditRecords(records);
+            : (preAuditData?.expenseType === 'meeting' ? renderMeetingAuditRecords(records) : renderOtherAuditRecords(records));
+        return;
+    }
+    if (preAuditData?.expenseType === 'meeting') {
+        container.innerHTML = renderMeetingAuditRecords(records);
         return;
     }
     if (preAuditData?.expenseType === 'other') {
@@ -3332,6 +3447,36 @@ function renderRecords() {
         `;
     }).join('');
     container.innerHTML = html;
+}
+
+function renderMeetingAuditRecords(records = []) {
+    const summary = preAuditData?.summary || {};
+    $('#recordStats').textContent = `${records.length} 条材料记录，合计 ${money(summary.totalAmount || summary.totalAll || 0)} 元`;
+    const issues = preAuditData?.auditResult?.issues || [];
+    const issueHtml = issues.length ? `<div class="rule-issues">${renderIssueList(issues)}</div>` : '<div class="issue pass">当前会议费规则未发现明显问题。</div>';
+    return `
+        <details class="record" open>
+            <summary>
+                <span>${escapeHtml(summary.meetingName || '会议费报销')}</span>
+                <span class="muted">${money(summary.totalAmount || summary.totalAll || 0)} 元</span>
+                ${issueCountBadges(issues)}
+            </summary>
+            <div class="record-body">
+                <div class="field-grid">
+                    ${field('会议时间', [summary.startDate, summary.endDate].filter(Boolean).join(' 至 ') || summary.meetingDate || '-')}
+                    ${field('会议地点', summary.meetingLocation || '-')}
+                    ${field('会议天数', summary.meetingDays || 0)}
+                    ${field('参会人数', summary.attendeeCount || 0)}
+                    ${field('住宿费', `${money(summary.accommodationAmount || 0)} 元`)}
+                    ${field('伙食费', `${money(summary.mealAmount || 0)} 元`)}
+                    ${field('场地租金', `${money(summary.venueRentAmount || 0)} 元`)}
+                    ${field('其他费用', `${money(summary.otherAmount || 0)} 元`)}
+                    ${field('发票金额', `${money(summary.invoiceAmount || 0)} 元`)}
+                </div>
+                ${issueHtml}
+            </div>
+        </details>
+    `;
 }
 
 function renderPrefillNotes(record) {

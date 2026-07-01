@@ -735,6 +735,61 @@
         return { personal, summary };
     }
 
+    function readFieldById(doc, id) {
+        const el = doc.getElementById(id);
+        if (!el) return '';
+        const input = el.querySelector?.('input, textarea, select');
+        const visible = el.querySelector?.('.adam-ui-showinput, [data-prefill-value]');
+        return String(
+            el.value
+            || input?.value
+            || visible?.getAttribute?.('data-prefill-value')
+            || visible?.textContent
+            || el.textContent
+            || ''
+        ).trim();
+    }
+
+    function extractMeetingDetail() {
+        const doc = getFinanceDocument();
+        const value = id => readFieldById(doc, id);
+        const amount = id => normalizeNumberText(value(id));
+        return {
+            title: value('SQ_MC'),
+            reason: value('SQ_SY'),
+            applicantName: value('JBR_MC') || value('SQ_JBR'),
+            departmentName: value('SSBM_MC') || value('SQ_SSBM'),
+            meetingName: value('SQ_MC'),
+            meetingDays: normalizeNumberText(value('HYTS')),
+            attendeeCount: normalizeNumberText(value('HYRS')),
+            mealAmount: amount('HSF'),
+            accommodationAmount: amount('ZSF'),
+            venueRentAmount: amount('CDF'),
+            otherAmount: amount('QTFY'),
+            applyAmount: amount('SQ_JE'),
+            totalAmount: amount('SQ_JE'),
+            paperAttachmentCount: normalizeNumberText(value('PJZS')),
+            meetingPlanNo: value('HYPXBH'),
+            approvalName: value('HYJYBH'),
+            remark: value('BZ'),
+            raw: {
+                SQ_MC: value('SQ_MC'),
+                SQ_SY: value('SQ_SY'),
+                HYTS: value('HYTS'),
+                HYRS: value('HYRS'),
+                HSF: value('HSF'),
+                ZSF: value('ZSF'),
+                CDF: value('CDF'),
+                QTFY: value('QTFY'),
+                SQ_JE: value('SQ_JE'),
+                PJZS: value('PJZS'),
+                HYPXBH: value('HYPXBH'),
+                HYJYBH: value('HYJYBH'),
+                BZ: value('BZ'),
+            },
+        };
+    }
+
     async function waitForPageStandards(doc) {
         const started = Date.now();
         while (Date.now() - started < 8000) {
@@ -1400,6 +1455,11 @@
         }
         if (request.action === 'extractPrefillTravelDetail') {
             sendResponse({ success: true, data: extractTravelDetail() });
+            return true;
+        }
+        if (request.action === 'extractMeetingDetail') {
+            const meetingDetail = extractMeetingDetail();
+            sendResponse({ success: true, data: meetingDetail, ...meetingDetail });
             return true;
         }
         if (request.action === 'extractAttachments') {

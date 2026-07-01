@@ -1,0 +1,1 @@
+{"operations":[{"sql":"INSERT INTO api_responses (id, request_id, case_id, status_code, success, response_body_json, error_message, elapsed_ms, responded_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)","params":["res_1782918298743_c89836a0c3","req_1782918298651_389948c998","",200,1,"[object Object]","",92,"2026-07-01T15:04:58.744Z"]}]}

@@ -38,6 +38,10 @@ def clean_hidden_unicode(text):
     return ''.join(ch for ch in text if ch not in HIDDEN_UNICODE_CHARS)
 
 
+def normalize_markdown_text(text):
+    return clean_hidden_unicode(text).replace('\r\n', '\n').replace('\r', '\n')
+
+
 def ctx(summary=None, ocr_items=None, evidence=None):
     return {
         'summary': summary or {},
@@ -428,7 +432,7 @@ def build_report(results, command_results):
     lines.append('')
     lines.append('- 建议进入第三轮定点修复。修复范围建议严格限定在会议费规则字段读取、冲突证据、中文金额解析和提示文案补强，不触碰其他场景和公共框架。')
     lines.append('')
-    return '\n'.join(lines)
+    return normalize_markdown_text('\n'.join(lines)).rstrip('\n') + '\n'
 
 
 def main():
@@ -440,8 +444,8 @@ def main():
     ]
     cases = make_cases()
     results = run_cases(cases)
-    report_text = clean_hidden_unicode(build_report(results, command_results))
-    REPORT.write_text(report_text, encoding='utf-8')
+    report_text = build_report(results, command_results)
+    REPORT.write_bytes(report_text.encode('utf-8'))
     print(json.dumps({
         'cases': len(results),
         'passed': sum(1 for item in results if item['casePassed']),

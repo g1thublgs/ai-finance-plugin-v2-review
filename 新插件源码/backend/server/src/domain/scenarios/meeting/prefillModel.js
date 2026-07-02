@@ -37,6 +37,43 @@ function parseDate(value) {
     return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
 }
 
+function parseDateRange(value) {
+    const text = cleanText(value);
+    if (!text) return { startDate: '', endDate: '' };
+    const fullRange = text.match(/(\d{4})[年\-/.](\d{1,2})[月\-/.](\d{1,2})日?\s*(?:至|到|—|~)\s*(\d{4})[年\-/.](\d{1,2})[月\-/.](\d{1,2})日?/);
+    if (fullRange) {
+        return {
+            startDate: `${fullRange[1]}-${fullRange[2].padStart(2, '0')}-${fullRange[3].padStart(2, '0')}`,
+            endDate: `${fullRange[4]}-${fullRange[5].padStart(2, '0')}-${fullRange[6].padStart(2, '0')}`,
+        };
+    }
+    const partial = text.match(/(\d{4})年(\d{1,2})月(\d{1,2})日?\s*(?:至|到|-|—|~)\s*(?:(\d{4})年)?(?:(\d{1,2})月)?(\d{1,2})日?/);
+    if (partial) {
+        const year = partial[1];
+        const endYear = partial[4] || year;
+        const endMonth = partial[5] || partial[2];
+        return {
+            startDate: `${year}-${partial[2].padStart(2, '0')}-${partial[3].padStart(2, '0')}`,
+            endDate: `${endYear}-${endMonth.padStart(2, '0')}-${partial[6].padStart(2, '0')}`,
+        };
+    }
+    const full = [...text.matchAll(/(\d{4})[年\-/.](\d{1,2})[月\-/.](\d{1,2})日?/g)];
+    if (full.length >= 2) {
+        const first = full[0];
+        const last = full[full.length - 1];
+        return {
+            startDate: `${first[1]}-${first[2].padStart(2, '0')}-${first[3].padStart(2, '0')}`,
+            endDate: `${last[1]}-${last[2].padStart(2, '0')}-${last[3].padStart(2, '0')}`,
+        };
+    }
+    if (full.length === 1) {
+        const first = full[0];
+        const single = `${first[1]}-${first[2].padStart(2, '0')}-${first[3].padStart(2, '0')}`;
+        return { startDate: single, endDate: single };
+    }
+    return { startDate: parseDate(text), endDate: '' };
+}
+
 function safeArray(value) {
     if (Array.isArray(value)) return value;
     if (value === undefined || value === null || value === '') return [];
@@ -131,6 +168,7 @@ function normalizePageFields(context = {}) {
         reimbursementUnitName: cleanText(firstValue(pageFields, ['reimbursementUnitName', 'unitName', '报销单位名称'])),
         meetingName: cleanText(firstValue(pageFields, ['meetingName', 'SQ_MC'])),
         meetingCategory: cleanText(firstValue(pageFields, ['meetingCategory', 'HYLB'])),
+        meetingLocation: cleanText(firstValue(pageFields, ['meetingLocation', 'HYDD', 'HYSJDD', 'meetingAddress'])),
         meetingPlanNo: cleanText(firstValue(pageFields, ['meetingPlanNo', 'HYPXBH'])),
         approvalNo: cleanText(firstValue(pageFields, ['approvalNo', 'approvalName', 'HYJYBH'])),
         meetingDays: parseNumber(firstValue(pageFields, ['meetingDays', 'HYTS']), 0),
@@ -138,7 +176,7 @@ function normalizePageFields(context = {}) {
         staffCount: parseNumber(firstValue(pageFields, ['staffCount', 'GZRYRS']), 0),
         accommodationAmount: parseAmount(firstValue(pageFields, ['accommodationAmount', 'ZSF']), 0),
         mealAmount: parseAmount(firstValue(pageFields, ['mealAmount', 'HSF']), 0),
-        venueRentAmount: parseAmount(firstValue(pageFields, ['venueRentAmount', 'CDF']), 0),
+        venueRentAmount: parseAmount(firstValue(pageFields, ['venueRentAmount', 'venueAmount', 'venueRent', 'CDF']), 0),
         materialAmount: parseAmount(firstValue(pageFields, ['materialAmount', 'ZLF']), 0),
         transportAmount: parseAmount(firstValue(pageFields, ['transportAmount', 'JTF']), 0),
         otherAmount: parseAmount(firstValue(pageFields, ['otherAmount', 'QTFY']), 0),
@@ -196,16 +234,25 @@ async function buildPrefill({ ocrItems = [], context = {} }) {
         { value: page.meetingName, source: 'page' },
         ...candidates(['meetingName', 'title', 'subject']),
     ], 'meetingName', evidence, warnings));
-    const startDate = parseDate(chooseCandidate([
+    let startDate = parseDate(chooseCandidate([
         ...candidates(['startDate', 'meetingStartDate']),
     ], 'startDate', evidence, warnings));
-    const endDate = parseDate(chooseCandidate([
+    let endDate = parseDate(chooseCandidate([
         ...candidates(['endDate', 'meetingEndDate']),
     ], 'endDate', evidence, warnings));
     const meetingDate = cleanText(chooseCandidate([
         ...candidates(['meetingDate', 'date']),
     ], 'meetingDate', evidence, warnings));
+    if ((!startDate || !endDate) && meetingDate) {
+        const range = parseDateRange(meetingDate);
+        startDate = startDate || range.startDate;
+        endDate = endDate || range.endDate;
+        if (range.startDate || range.endDate) {
+            addEvidence(evidence, 'meetingDateRange', { value: range, source: 'ocr.meetingDate' });
+        }
+    }
     const meetingLocation = cleanText(chooseCandidate([
+        { value: page.meetingLocation, source: 'page' },
         ...candidates(['location', 'meetingLocation', '地点']),
     ], 'meetingLocation', evidence, warnings));
     const meetingCategory = cleanText(chooseCandidate([
@@ -284,6 +331,18 @@ async function buildPrefill({ ocrItems = [], context = {} }) {
         ['hasPaymentProof', hasDoc(repairedItems, ['paymentProof'])],
     ].forEach(([field, value]) => addEvidence(evidence, field, { value, source: 'ocrRecognizeType' }));
 
+    const paymentRows = repairedItems
+        .filter(item => docType(item) === 'paymentProof')
+        .map(item => ({
+            payeeName: cleanText(firstValue(item, ['payeeName', 'payee', '收款人名称'])),
+            payerName: cleanText(firstValue(item, ['payerName', '付款人名称'])),
+            paymentMethod: cleanText(firstValue(item, ['paymentMethod', '支付方式'])),
+            paymentAmount: parseAmount(firstValue(item, ['paymentAmount', 'payAmount', '支付金额']), 0),
+            cardAmount: parseAmount(firstValue(item, ['cardAmount', '刷卡金额']), 0),
+            cardTime: cleanText(firstValue(item, ['cardTime', '刷卡时间'])),
+            fileName: cleanText(item.sourceFileName || item.fileName),
+        }));
+
     const summary = {
         meetingName,
         startDate,
@@ -313,6 +372,7 @@ async function buildPrefill({ ocrItems = [], context = {} }) {
         otherAmount,
         invoiceAmount,
         paymentAmount,
+        payments: paymentRows,
         applyAmount,
         totalAmount,
         totalAll: totalAmount,
